@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1 class="page-header">Wishlist App</h1>
+<p class="lead">Share with your friends or family everything you're currently interested in.<br/>
+    {% if current_user.is_authenticated %}
+    <ul>
+      <li><a href="{{ url_for('add_item') }}"> Add item to wishlist</a></li>
+      <li><a href="{{ url_for('view_wishlist') }}"> View wishlist</a></li>
+      <li><a href="{{ url_for('share_wishlist') }}"> Share wishlist</a></li>
+    </ul>
+    {% else %}
+    <a href="{{ url_for('signup') }}"> Sign up</a> today! or <a href="{{ url_for('login') }}">Login</a> if you already have an account.
+    {% endif %}
+</p>
+<br/>
+{% include 'flash_messages.html' %}
+{% endblock %}

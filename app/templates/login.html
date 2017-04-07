@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 
 {% block main %}
+<!--SHAN TO BUILD FRONT-END USING ANGULARJS-->
+{% raw %}
+{% endraw %}
+
   <div class="login-form center-block">
-    <h2>Please Log in</h2>
+    <h1 class="page-header">Login or Create an account</h1>
     {% include 'flash_messages.html' %}
+    <div> <h2> New Users </h2></br><p>Sign up<a href="{{ url_for('signup') }}"> here</a>.</p></div>
+    <hr>
+    <div><h2> Registered Users</h2></div>
     <form action="{{ url_for('login') }}" method="post">
       {{ form.csrf_token }}
       <div class="form-group">
@@ -17,4 +24,10 @@
       <button type="submit" name="submit" class="btn btn-primary btn-block">Log in</button>
     </form>
   </div>
+
 {% endblock %}
+
+{% block js %}
+<!-- Angular Basics -->
+{% include 'angular.html' %}
+{% endblock%}

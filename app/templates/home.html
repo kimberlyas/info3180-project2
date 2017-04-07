@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block main %}
+<!--SHAN TO BUILD FRONT-END USING ANGULAR JS-->
+{% raw %}
+{% endraw %}
 <h1 class="page-header">Wishlist App</h1>
 <p class="lead">Share with your friends or family everything you're currently interested in.<br/>
     {% if current_user.is_authenticated %}
@@ -16,3 +19,8 @@
 <br/>
 {% include 'flash_messages.html' %}
 {% endblock %}
+
+{% block js %}
+<!-- Angular Basics -->
+{% include 'angular.html' %}
+{% endblock%}

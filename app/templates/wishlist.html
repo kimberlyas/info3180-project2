@@ -2,22 +2,20 @@
 
 {% block main %}
 <h1 class="page-header">Your Wishlist</h1>
-<!-- AngularJS Code -->
+<!-- AngularJS Code (SHAN) -->
 {% raw %}
 <div class="container" ng-app="" ng-controller="">
   <!-- View wishlist items Code -->
   <!-- Add item to wishlist Code -->
   <!-- Remove item from wishlist Code -->
-  <!-- Share wishlist Code (Georgia) -->
+  <!-- Share wishlist Code (GEORGIA) -->
 </div>
 {% endraw %}
 {% endblock %}
 
-{% block js %} 
-<!-- AngularJS Library -->
-<script src="{{ url_for('static',filename='js/angular.min.js') }}"></script>
-<!-- App Module -->
-<script src="{{ url_for('static',filename='js/app.js') }}"></script>
+{% block js %}
+<!-- Angular Basics -->
+{% include 'angular.html' %}
 <!-- Thumbnail API Service -->
 <script src="{{ url_for('static',filename='js/thumbnails.js') }}"></script>
 {% endblock%}

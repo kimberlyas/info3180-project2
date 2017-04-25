@@ -35,7 +35,7 @@ class SignupForm(LoginForm):
       else:
         return True
 
-# class WishForm(FlaskForm):
+# class WishlistForm(FlaskForm):
 #     title = StringField('Title', validators=[InputRequired()])
 #     description = TextAreaField('Description', validators=[InputRequired()])
 #     url = StringField('Item URL', validators=[InputRequired(), URL(message="Invalid URL given")])

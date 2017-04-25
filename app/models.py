@@ -49,15 +49,7 @@ class UserProfile(db.Model):
     def __repr__(self):
         return '<User %r>' % (self.first_name + self.last_name)
 
-# JWT Handlers        
-def authenticate(email,password):
-    user = UserProfile.query.filter(UserProfile.email == email).scalar()
-    if UserProfile.check_password(UserProfile.password, password):
-        return user
-    
-def identity(payload):
-    return UserProfile.query.filter(UserProfile.id == payload['identity']).scalar()
-    
+
 # Wishlist Item
 class Wish(db.Model):
     item_id = db.Column(db.Integer, primary_key=True)

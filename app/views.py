@@ -5,14 +5,14 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
-from app import app, db, login_manager, jwt
-from flask import render_template, request, redirect, url_for, flash, jsonify, send_from_directory, session
+from app import app, db, login_manager
+from flask import render_template, request, redirect, url_for, flash, jsonify, json, send_from_directory, make_response, abort
 from flask_login import login_user, logout_user, current_user, login_required
-from flask_jwt import jwt_required, current_identity
+from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy.sql import text
 from werkzeug.utils import secure_filename
 from forms import LoginForm, SignupForm
-from models import UserProfile, Wish
+from models import UserProfile, Wish, users_wishes
 from bs4 import BeautifulSoup
 import requests
 import urlparse
@@ -20,7 +20,42 @@ import time
 import os
 import random
 
+###
+# JWT Handlers
+###
+def authenticate(email,password):
+    """ Returns an authenticated identity """
+    # Lookup user
+    user = UserProfile.query.filter_by(email=email).first()
+    if not user:
+        abort(404) # not found
+    # Validate user's password
+    if user.check_password(password):
+        # Return the user object
+        return user
+    else:
+        abort(401) # unauthorized
 
+def identity(payload):
+    """ Returns a user given an existing token """
+    return UserProfile.query.get(payload['identity'])
+    
+def auth_response_handler(access_token, identity):
+    """ Custom token response """
+    #Set error boolean
+    err = None
+    # Set message field
+    msg = "Success"
+    # Create data dict
+    userData = {'email': identity.email, 'name': identity.name}
+    jsonData = {'user': userData, 'access_token': access_token.decode('utf-8'), 'payload': jwt.jwt_payload_callback()}
+    
+    # Generate JSON object
+    return jsonify(error=err, data=jsonData, message=msg), 302 # found
+
+## Setup Flask-JWT
+jwt = JWT(app, authenticate, identity)
+        
 ###
 # Routing for your application.
 ###
@@ -51,225 +86,268 @@ def logout():
     # redirect to the home route
     return redirect(url_for('home'))
 
-# send CORS headers
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    if request.method == 'OPTIONS':
-        response.headers['Access-Control-Allow-Methods'] = 'DELETE, GET, POST, PUT'
-        headers = request.headers.get('Access-Control-Request-Headers')
-        if headers:
-            response.headers['Access-Control-Allow-Headers'] = headers
-    return response
+# # EXTRA - add profile page for users (DEFER TO FRONT-END)
+# @app.route('/api/users/<int:userid>', methods=['GET'])
+# def view_profile(userid):
+#     """ Render an individual user profile page """
+    
+#     # Search for given userid
+#     user_profile = UserProfile.query.filter_by(id=userid).first()
+#     # Check if found
+#     if user_profile is not None:
+        
+#         # Render user's profile page
+#         return render_template('view_profile.html', user_profile=user_profile)
+    
+#     else: # Not found
+        
+#         # Flash error message
+#         flash('Sorry! User does not exist.','danger')
+            
+#         # Redirect to home
+#         return redirect(url_for('home'))
+           
+# ADMIN Test 1        
+@app.route("/api/users/<int:userid>", methods=['GET'])  
+def get_user(userid):
+    """ Returns a user's profile as a JSON object"""
+    # Search for userid
+    user = UserProfile.query.get(userid)
+    # Check if not found
+    if not user:
+        # Error
+        abort(404) # resource not found
+    # Return user info as JSON output
+    err = None
+    msg = "Success"
+    userData = {'id':user.id, 'email': user.email,'name': user.name, 'password': user.password, 'age': user.age, 'gender': user.gender, 'image': user.image}
+    # Generate JSON output
+    return jsonify(error=err, data={'user': userData}, message=msg)
 
-# GEORGIA
-@app.route("/share/<userid>/wishlist")
+# ADMIN Test 2
+@app.route("/api/items/<int:itemid>")  
+def get_item(itemid):
+    """ Returns a wishlist item """
+    # Search for itemid
+    wish = Wish.query.get(itemid)
+    # Check if not found
+    if not wish:
+        # Error
+        abort(404)
+    # Return wish info as JSON output
+    err = None
+    msg = "Success"
+    itemData = {'id': wish.item_id, 'title': wish.title, 'description': wish.description, 'url': wish.url, 'thumbnail_url': wish.thumbnail}
+    # Generate JSON output
+    return jsonify(error=err, data={'item': itemData}, message=msg)
+
+# NEEDS SOME WORK (ADMIN Test 3)
+@app.route("/api/token/<user>")
+def authorize_user(user):
+    """ Generates a token header for a user """
+    # Return Format --> Authorization: <token schema> <token>
+    auth = 'Bearer ' + encode_user(user)
+    return requests.post(url_for("login", _external=True), headers={'Authorization': auth})
+
+###
+# Share Feature (GEORGIA)
+###
+@app.route("/share/<int:userid>/wishlist")
 def share_wishlist(): 
     """ Allows a user to share their wishlist with friends or family via email"""
     pass 
-    # Can use Flask-Mail?? :/
+    
 
 ###
 # API Routes
 ###
-@app.route("/api/users/register", methods=["GET","POST"])
+@app.route("/api/users/register", methods=["POST"])
 def signup():
     """ Accepts user information and saves it to the database """
-    # Generate sign up form
-    form = SignupForm()
-    # Check request type
-    if request.method == "POST":
-        # Validate form
-        if form.validate_on_submit():
-            # Get form values
-            name = request.form['name']
-            email = request.form['email']
-            password = request.form['password']
-            age = request.form['age']
-            gender = request.form['gender']
-            # Uploads folder
-            imageFolder = app.config["UPLOAD_FOLDER"]
-            # Get picture file
-            imageFile = request.files['image']
-            # Check if empty
-            if imageFile.filename == '':
-                # Store default profile pic in DB
-                imageName = "profile-default.gif"
-            else:
-                # Secure file
-                imageName = secure_filename(imageFile.filename)
-                # Save to uploads directory
-                imageFile.save(os.path.join(imageFolder, imageName))
-            
-            # Loop to find a unique id
-            while True:
-                # Generate a random userid
-                userid = random.randint(620000000, 620099999)
-                # Search for this userid
-                result = UserProfile.query.filter_by(id=userid).first() 
-                # Check if not found
-                if result is None:
-                    # Unique; Exit loop
-                    break
-            # Generate the date the user was created on
-            created_on = timeinfo()
-            # Create user object
-            user = UserProfile(userid,name,age,gender,imageName,email,password,created_on)
-            # Store data in database
-            db.session.add(user)
-            db.session.commit()
-            # Set up JSON response
-            err = False
-            msg = "Success"
-            userData = {'email': user.email,'name': user.name, 'password': user.password, 'age': user.age, 'gender': user.gender, 'image': user.image}
-        
-        else:
-            # Error
-            err = True
-            # Error Message
-            msg = form.errors
-            # Set data property
-            userData = None
-        
-        # Generate JSON output
-        return jsonify(error=err, data=userData, message=msg)
-                        
-    # Display any errors in form
-    flash_errors(form)
+    # Check for JSON object
+    if not request.json:
+        abort(400)
     
-    # Load registration page
-    return render_template("signup.html", form=form)
+    # Get JSON data values
+    name = request.json['name']
+    
+    ## EMAIL FIELD
+    email = request.json['email']
+    # Check if email has been used before
+    if UserProfile.query.filter_by(email = email).first() is not None:
+        return jsonify(error=True, data=None, message="Email already in use"), 400 # existing user
+    
+    password = request.json['password']
+    
+    # Check manadatory json fields
+    if name is None or email is None or password is None:
+        abort(400) # missing arguments
+    
+    # Get other fields
+    age = request.json['age']
+    gender = request.json['gender']
+    
+    ## IMAGE FIELD
+    # Uploads folder
+    imageFolder = app.config["UPLOAD_FOLDER"]
+    # Store default profile pic in DB
+    imageName = "profile-default.gif"
+    # Get picture file
+    if 'image' in request.files: # tolerate missing image
+        imageFile = request.files['image'] 
+        # Secure file
+        imageName = secure_filename(imageFile.filename)
+        # Save to uploads directory
+        imageFile.save(os.path.join(imageFolder, imageName))
+    
+    ## ID FIELD        
+    # Loop to find a unique id
+    while True:
+        # Generate a random userid
+        userid = random.randint(620000000, 620099999)
+        # Search for this userid
+        result = UserProfile.query.filter_by(id=userid).first() 
+        # Check if not found
+        if result is None:
+            # Unique; Exit loop
+            break
+        
+    ## DATE FIELD
+    # Generate the date the user was created on
+    created_on = timeinfo()
+    
+    # Create user object
+    user = UserProfile(userid,name,age,gender,imageName,email,password,created_on)
+    # Store data in database
+    db.session.add(user)
+    db.session.commit()
+    
+    # Set up JSON response
+    err = None
+    msg = "Success"
+    userData = {'id': user.id, 'email': user.email,'name': user.name, 'age': user.age, 'gender': user.gender, 'image': user.image, 'uri': url_for('get_user', userid = user.id, _external = True)}
+    # Generate JSON output
+    return jsonify(error=err, data={'user': userData}, message=msg), 201 # user created
+    
 
-@app.route("/api/users/login", methods=["GET", "POST"])
+@app.route("/api/users/login", methods=["POST"])
 def login():
     """ Accepts login credentials as email and password """
-    # Generate login form
-    form = LoginForm()
-    # Check request type
-    if request.method == "POST":
-        # Validate form submission
-        if form.validate_on_submit():
-            # Get the email and password values from the form
-            email = form.email.data
-            password = form.password.data
-            
-            # Query database for a user based on the email submitted
-            user = UserProfile.query.filter_by(email=email).first()
-            
-            # Check if user was found and if password matches stored pswd value
-            if user is not None and user.check_password(password):
-                # Set error boolean
-                err = False
-                # Set message field
-                msg = "Success"
-                # Create user dict
-                userData = {'email': user.email, 'password': user.password}
-            else:
-                # Error 
-                err = True
-                # Error Message
-                msg = "Invalid username/password"
-                # Data property
-                userData = user # empty object
-        else:
-            # Set error property
-            err = True
-            # Leave data property as an empty object
-            userData = None
-            # Set appropriate error message
-            msg = form.errors
+    
+    # Store authorization request
+    auth = request.json
+    
+    # Check for json header
+    if not auth:
+        abort(400) # bad request
         
-        # Generate JSON object
-        return jsonify(error=err, data=userData, message=msg)
-    
-    # Display any errors in form
-    flash_errors(form)
-    
-    # Load login page
-    return render_template("login.html", form=form)
-
-@app.route("/api/users/<userid>/wishlist", methods=["GET","POST"])
+    # Get data fields
+    email = auth['email']
+    password = auth['password']
+        
+    # Check fields
+    if email is None or password is None:
+        abort(400) # missing arguments
+        
+    # Check authentication
+    identity = jwt.authentication_callback(email, password)
+            
+    # Generate an access token
+    access_token = jwt.jwt_encode_callback(identity)
+            
+    # Generate json response
+    return jwt.auth_response_handler(access_token, identity)
+        
+@app.route("/api/users/<int:userid>/wishlist", methods=["GET","POST"])
 @jwt_required()
-@login_required
 def view_wishlist(userid):
-    """ Renders user's wishlist """
+    """ Returns a user's wishlist """
     
     # Seach for user whose wishlist we'd like to view
     user = db.session.query(UserProfile).filter_by(id=userid).first()
     
     # Check request type
-    if request.method == "GET":
+    if request.method == "GET": # View user's wishlist
         
         # Check if user was found
         if user:
+            
+            # Initialize list of wishes
+            wishList = []
+            
             # Define SQL query
-            query = text("""SELECT wish.item_id, wish.title, wish.description, wish.url, wish.thumbnail  
-                                       FROM user_profile JOIN users_wishes JOIN wish 
-                                       ON user_profile.id = users_wishes.user_id AND users_wishes.wish_id = wish.item_id 
-                                       WHERE user_profile.id = :id""")
+            query = text("""SELECT wish.item_id, wish.title, wish.description, wish.url, wish.thumbnail FROM wish INNER JOIN users_wishes ON users_wishes.wish_id = wish.item_id WHERE users_wishes.user_id = :id""")
             # Get all items in specific user's wishlist
-            wishes = db.execute(query, **user)
+            wishes = db.session.get_bind().execute(query, id=user.id)
             
             # Check if there were any wishes
             if wishes:
             
-                # Initialize list of wishes
-                wishList = []
-            
                 # Get each wish
                 for wish in wishes:
                     # Create dictionary format
-                    wishDict = {'id': wish.item_id, 'title': wish.title, 'description': wish.description, 'url': wish.url, 'thumbnail_url': wish.thumbnail}
+                    wishDict = {'id': wish["item_id"], 'title': wish["title"], 'description': wish["description"], 'url': wish["url"], 'thumbnail_url': wish["thumbnail"]}
                     # Add to list of wishes
                     wishList.append(wishDict)
             
                 # JSON
-                err = False
+                err = None
                 msg = "Success"
-                userData = {"wishes":wishList}
+                userData = {"items": wishList}
             else: # No wishes found
                 # Error?
                 err = True
                 msg = "No wishes found"
-                userData = {}
+                userData = {"items": wishList}
         else: # No such user found
             # Error
-            err = True
-            msg = "User not found"
-            userData = None
+            abort(404)
+        
+        # Generate JSON object
+        return jsonify(error=err, data=userData, message=msg)
                 
-    elif request.method == "POST":
+    elif request.method == "POST": # Add item to wishlist
     
         # Get JSON object from Angular Server
-        jsonObj = request.json
+        if request.json:
+            jsonObj = request.json
+        else:
+            abort(400) # bad request
+        
+        # Get fields
+        title = jsonObj['title']
+        description = jsonObj['description']
+        url = jsonObj['url']
+        thumbnail_url = jsonObj['thumbnail_url']
+        
+        # Check fields
+        if title is None or description is None or url is None or thumbnail_url is None:
+            abort(400) # missing arguments
         
         # Check if user was found
         if user:
             # Create Wish object
-            wish = Wish(title=jsonObj['title'], description=jsonObj['description'], url=jsonObj['url'] ,thumbnail=jsonObj['thumbnail'])
+            wish = Wish(title,description,url,thumbnail_url)
             # Save to DB
             db.session.add(wish)
+            # Commit changes
             db.session.commit()
+            # Add entry to relationship table
+            db.session.get_bind().execute(users_wishes.insert(), user_id=userid, wish_id=wish.item_id)
             # JSON
-            err = False
-            userData = {'title': wish.title, 'description': wish.description, 'url': wish.url, 'thumbnail_url': wish.thumbnail}
-            msg = "Successfully saved"
+            err = None
+            itemData = {'id': wish.item_id, 'title': wish.title, 'description': wish.description, 'url': wish.url, 'thumbnail_url': wish.thumbnail, 'uri': url_for('get_item', itemid = wish.item_id, _external = True), 'current_identity': str(current_identity)}
+            msg = "Success"
         else:
-            # Set error property
-            err = True
-            # Set error message
-            msg = "User not found"
-            # Empty object
-            userData = None
+            # User not found
+            abort(404)
     
         # Generate JSON object
-        return jsonify(error=err, data=userData, message=msg)
+        return jsonify(error=err, data={'item': itemData}, message=msg), 201 # created
         
-    return render_template('wishlist.html', wishlist=wishes)
 
-@app.route("/api/users/<userid>/wishlist/<itemid>", methods=["DELETE"])
+@app.route("/api/users/<int:userid>/wishlist/<int:itemid>", methods=["DELETE"])
 @jwt_required()
-@login_required
 def delete_item(userid, itemid):
     """ Deletes an item from a user's wishlist """
     
@@ -286,27 +364,28 @@ def delete_item(userid, itemid):
             # Save changes
             db.session.commit()
             # JSON
-            err = False
+            err = None
             msg = "Success"
-            userData = {'itemid': wish.item_id}
+            userData = {'itemid': wish.item_id, 'title': wish.title}
         else: # Wish not found
             # Error
-            err = True
-            msg = "Wished Item not found"
-            userData = {}
+            abort(404)
     else: # User not found
         # Error
-        err = True
-        msg = "User not found"
-        userData = None
+        abort(404)
     
     # Generate JSON object
     return jsonify(error=err, data=userData, message=msg)    
             
 
 @app.route('/api/thumbnails', methods=['GET'])
-def get_thumbnails(url):
+def get_thumbnails():
     """ Accepts a URL and returns JSON containing a list of thumbnails """
+    # Check for json Object
+    if not request.json or 'url' not in request.json:
+        abort(400)
+    # Get URL
+    url = request.json['url']
     # Get image URLs
     urls = get_imageURLS(url)
     # Generate JSON output
@@ -314,15 +393,16 @@ def get_thumbnails(url):
         err = None
         msg = "Success"
     else:
-        err = "Request Error"
-        msg = "Failed"
+        err = True
+        msg = "URL request error"
     
-    return jsonify(error=err, data=urls, message=msg)
+    return jsonify(error=err, data={'thumbnails': urls}, message=msg)
+    
+
 
 ###
 # The functions below should be applicable to all Flask apps.
 ###
-
 def timeinfo():
     """ Returns the current datetime """
     return time.strftime("%d %b %Y")
@@ -360,7 +440,7 @@ def get_imageURLS(url):
     return imgs
 
 @app.route('/img/<path:filename>')
-def serve_file(path):
+def serve_file(filename):
     dir = app.config["UPLOADS_FOLDER"]
     return send_from_directory(dir,filename)
 
@@ -377,15 +457,44 @@ def add_header(response):
     and also to cache the rendered page for 10 minutes.
     """
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
-    response.headers['Cache-Control'] = 'public, max-age=0'
+    response. headers['Cache-Control'] = 'public, max-age=0'
     return response
 
-
+# # send CORS headers
+# @app.after_request
+# def after_request(response):
+#     response.headers.add('Access-Control-Allow-Origin', '*')
+#     if request.method == 'OPTIONS':
+#         response.headers['Access-Control-Allow-Methods'] = 'DELETE, GET, POST, PUT'
+#         headers = request.headers.get('Access-Control-Request-Headers')
+#         if headers:
+#             response.headers['Access-Control-Allow-Headers'] = headers
+#     return response
+    
 @app.errorhandler(404)
 def page_not_found(error):
     """Custom 404 page."""
-    return render_template('404.html'), 404
+    if request.headers['Content-Type'] == 'application/json':
+        err = True
+        msg = "Not found"
+        appData = None
+        return make_response(jsonify(error=err, data=appData, message=msg), 404)
+    else:
+        return render_template('404.html'), 404
 
+@app.errorhandler(400)
+def bad_request(error):
+    err = True
+    msg = "Bad request"
+    appData = None
+    return make_response(jsonify(error=err, data=appData, message=msg), 400)
 
+@app.errorhandler(401)
+def unauthorized_access(error):
+    err = True
+    msg = "Unauthorized Access"
+    appData = None
+    return make_response(jsonify(error=err, data=appData, message=msg), 401)
+    
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0",port="8080")

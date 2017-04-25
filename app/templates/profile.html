@@ -1,0 +1,53 @@
+{% extends "base.html" %} 
+
+{% block css %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+
+{% endblock %}
+
+{% block main %} 
+
+<h1 class="page-header">User Profile</h1>
+
+{% include 'flash_messages.html' %}
+
+<div class="main-container">
+    
+    <div class="profile-picture">
+      
+        <img id="pic" src="{{ url_for('static',filename="uploads/"+ user_profile.image) }}" alt="Picture of User">
+       
+    </div>
+
+    <div class="info-container">
+        <div id="name-header" class="separator">
+             <h3> {{ user_profile.first_name }} {{ user_profile.last_name }} </h3>
+        </div>
+        
+        <div id="date" class="separator">
+            <p><b>Profile Created On:</b>{{ user_profile.created_on }}</p>
+        </div>
+        
+        <div id="info-list" class="separator">
+            <dl><dt>Username: </dt><dd> {{ user_profile.username }}</dd>
+                <dt>User ID: </dt><dd> {{ user_profile.userid }}</dd>
+                <dt>Age: </dt><dd> {{ user_profile.age }}</dd>
+                {% if user_profile.gender == 'F' %}
+                    <dt>Gender: </dt><dd> Female</dd>
+                {% elif user_profile.gender == 'M' %}
+                    <dt>Gender: </dt><dd> Male</dd>
+                {% else %}
+                    <dt>Gender: </dt><dd> Other</dd>
+                {% endif %}
+            </dl>
+        </div>
+        
+        <div id="about" class="separator">
+            <p> {{ user_profile.biography }} </p>
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}

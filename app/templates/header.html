@@ -15,6 +15,7 @@
             <li><a href="{{ url_for('about') }}">About</a></li>
             {% if current_user.is_authenticated %}
               <li><a href="{{ url_for('view_wishlist') }}">My Wishlist</a></li>
+              <li><a href="{{ url_for('view_profile') }}">My Profile</a></li>
             {% endif %}
           </ul>
 

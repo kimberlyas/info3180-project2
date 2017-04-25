@@ -1,8 +1,6 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from flask_jwt import JWT
-#from flask.ext.security import Security, SQLAlchemyUserDatastore 
 import os
 
 app = Flask(__name__)
@@ -13,16 +11,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True # added just to suppress a w
 #app.config['JWT_EXPIRATION_DELTA'] = # token expires in 
 app.config['JWT_AUTH_ENDPOINT'] = 'Bearer' # authorization header
 
+# Set up Flask-SQLAlchemy
 db = SQLAlchemy(app)
-
-import models
-
-# Setup Flask-JWT
-jwt = JWT(app, models.authenticate, models.identity)
-
-# Setup Flask-Security
-# user_datastore = SQLAlchemyUserDatastore(db, UserProfile, Wish)
-# security_manager = Security(app, user_datastore)
 
 # Flask-Login login manager
 login_manager = LoginManager()

@@ -1,0 +1,180 @@
+-- API TEST DATA
+
+// Test User 1
+userid: 620089869
+email: test1@example.com
+password: password123
+access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMxMjk3NzMsIm5iZiI6MTQ5MzEyOTc3MywiZXhwIjoxNDkzMTMwMDczfQ.fr-i3NbMdSjBJWf5smEsIA6G94FThRaCCOT2lRqMyCU"
+
+// Test User 2
+userid: 620099713
+email: test2@example.com
+password: password123
+
+// Authorization Header
+Format --> Authorization: <token schema> <token>
+using JWT so --> Authorization: Bearer <token>
+
+-- API Test Commands
+
+1. Thumbnail Endpoint
+ curl -i -H "Content-Type: application/json" -X GET -d '{"url":"https://www.amazon.com/dp/B01LTHXAO0"}' http://0.0.0.0:8080/api/thumbnails
+
+2. User Registration Endpoint (WORKED; TEST DATA STORED IN DB ^_^)
+ curl -i -H "Content-Type: application/json" -X POST -d '{"email":"test@example.com", "name":"Test User", "password":"password123","age":26, "gender":"F"}' http://0.0.0.0:8080/api/users/register
+
+3. User Login Endpoint
+ curl -i -H "Content-Type: application/json" -X POST -d '{"email":"test@example.com","password":"password123"}' http://0.0.0.0:8080/api/users/login
+
+4. Add item to Wishlist Endpoint
+
+-- Test with auth header
+ curl -i -H "Authorization: Bearer
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMxMjk3NzMsIm5iZiI6MTQ5MzEyOTc3MywiZXhwIjoxNDkzMTMwMDczfQ.fr-i3NbMdSjBJWf5smEsIA6G94FThRaCCOT2lRqMyCU" -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/<620076399>/wishlist
+
+-- Test without auth header (Should produce an error) 
+ curl -i -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/620099713/wishlist
+
+5. View Wishlist Endpoint
+
+-- Test without auth header (Should produce an error)
+ curl -i http://0.0.0.0:8080/api/users/{userid}/wishlist
+
+6. Remove Wishlist Item Endpoint
+
+-- Test without auth header (Should produce an error)
+ curl -i -H "Content-Type: application/json" -X DELETE http://0.0.0.0:8080/api/users/{userid}/wishlist/{itemid}
+
+-- # EXTRA ENDPOINTS for Testing Purposes
+7. Get user info
+ curl -i -H "Content-Type: application/json" -X GET http://0.0.0.0:8080/api/users/{userid}
+
+8. Get item info
+curl -i -H "Content-Type: application/json" -X GET  http://0.0.0.0:8080/api/items/{itemid}
+
+9. Get token
+curl -i -H "Content-Type: application/json" -X GET http://0.0.0.0:8080/api/token/{user}
+
+--# API Unit Test Cases
+
+1. Thumbnail Endpoint
+	- Send valid GET request with url data that can be accessed (200 OK)
+	- Send invalid request
+		- Send a request with no json data (400 error)
+		- Send a request with missing url field (400 error)
+		- Send a request with an invalid url address (error msg)
+2. User Registration Endpoint
+	- Send valid POST request with name,email,password,age,gender,image (201 CREATED, Check uploads folder)
+	- Send valid POST request with ^^^^^^^^^^^^^^^^^^^^^^^ but no image (201 CREATED, Check DB for default image location saved, unique id and creation date [UserProfile object])
+	- Send an invalid request
+		- Send no json data with request (400 error)
+		- Send request with an email that's already been registered (400 error)
+		- Send a GET request 
+		- Send request with some missing arguments [email or password or name] (400 error)	
+3. User Login Endpoint
+	- Send valid POST request with email and password that match DB (305 FOUND, Check for access token)
+	- Send an invalid request
+		- Send a GET request
+		- Send request with no json data (400 error)
+		- Send request with missing arguments [email or password] (400 error)
+		- Send request with invalid email and password (401 error)
+4. Add Item Endpoint
+	- Send valid POST request with item title,description,url and thumbnail url, for a user that exists, with authorization header [Bearer: <valid access token>] (201 CREATED, Check DB for object saved)
+	- Send an invalid request
+		- Send request with no json data (400 error)
+		- Send request for a user that doesn not exist (404 error)
+		- Send request without an authorization header (401 error)
+		- Send request with missing arguments [title or description or url or thumbnail url] (400 error)
+5. View Wishlist Endpoint
+	- Send valid GET request to url path that exists [userid] and user has made wishes, with authorization header [Bearer: <valid access token>] (200 OK)
+	- Send valid GET reqest ^^^^^^^^^ but user hasn't made any wishes yet (404 error?, Check items list)
+	- Send an invalid request
+		- Send a request for a user that doesn't exist (404 error)
+		- Send a request without the authorization header [Try Basic header as well](401 error)
+6. Remove Item Endpoint
+	- Send valid DELETE request to url path that exists [userid, itemid], with authorization header [Bearer: <valid access token>] (200 OK, Check DB)
+	- Send an invalid request
+		- Send GET or POST request
+		- Send request with an authorization header
+		- Send request to invalid user that doesn't exist (404 error)
+		- Send request for a valid user but an item that doesnt exist (404 error) 
+7. Get User Profile Info
+	- Send a valid GET request with a userid which exists (200 OK)
+	- Send an invalid request
+		- POST request
+		- user does not exist (404 error)
+8. Get Item Info
+	- Send a valid GET request with an itemid which exists
+	- Send an invalid request
+		- POST request
+		- item does not exist (404 error)
+9. Get Token
+	- Under construction /!\
+	
+	
+-- # DATABASE STUFFS
+Database Name: project2
+Username: admin
+Password: password
+
+-- Tables
+
+Table "user_profile"
+
+   Column   |          Type          |                         Modifiers                         
+------------+------------------------+-----------------------------------------------------------
+ id         | integer                | not null default nextval('user_profile_id_seq'::regclass)
+ email      | character varying(255) | 
+ password   | character varying(255) | 
+ age        | integer                | 
+ created_on | character varying(80)  | 
+ gender     | character varying(1)   | 
+ image      | character varying(255) | 
+ name       | character varying(80)  | 
+Indexes:
+    "user_profile_pkey" PRIMARY KEY, btree (id)
+    "user_profile_email_key" UNIQUE CONSTRAINT, btree (email)
+Referenced by:
+    TABLE "users_wishes" CONSTRAINT "users_wishes_user_id_fkey" FOREIGN KEY (user_id) REFERENCES user_profile(id)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Table "users_wishes" (relationship table)
+
+ Column  |  Type   | Modifiers 
+---------+---------+-----------
+ user_id | integer | 
+ wish_id | integer | 
+Foreign-key constraints:
+    "users_wishes_user_id_fkey" FOREIGN KEY (user_id) REFERENCES user_profile(id)
+    "users_wishes_wish_id_fkey" FOREIGN KEY (wish_id) REFERENCES wish(item_id)
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Table "wish"
+
+   Column    |          Type          |                       Modifiers                        
+-------------+------------------------+--------------------------------------------------------
+ item_id     | integer                | not null default nextval('wish_item_id_seq'::regclass)
+ title       | character varying(255) | 
+ description | text                   | 
+ url         | character varying(255) | 
+ thumbnail   | character varying(255) | 
+Indexes:
+    "wish_pkey" PRIMARY KEY, btree (item_id)
+Referenced by:
+    TABLE "users_wishes" CONSTRAINT "users_wishes_wish_id_fkey" FOREIGN KEY (wish_id) REFERENCES wish(item_id)
+
+-- Queries
+
+SELECT wish.item_id, wish.title, wish.description, wish.url, wish.thumbnail FROM
+
+user_profile INNER JOIN users_wishes ON user_profile.id = users_wishes.user_id
+
+INNER JOIN wish ON users_wishes.wish_id = wish.item_id
+
+WHERE user_profile.id = :id
+
+Alternatively:
+
+SELECT wish.item_id, wish.title, wish.description, wish.url, wish.thumbnail FROM wish INNER JOIN users_wishes ON users_wishes.wish_id = wish.item_id WHERE users_wishes.user_id = :id

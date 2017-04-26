@@ -1,8 +1,8 @@
 # A Wishlist Web Application
 Project members : 
-@Shanice Bryan (https://github.com/0shanAbry1)
-@Georgia Pickersgill (https://github.com/GeorgiaPickersgill)
-@Kimberly Soares (https://github.com/kimberlyas)
+-@Shanice Bryan (https://github.com/0shanAbry1)
+-@Georgia Pickersgill (https://github.com/GeorgiaPickersgill)
+-@Kimberly Soares (https://github.com/kimberlyas)
 
 ## Background
 While it is possible to create a wish list on Amazon, or similar sites there are

@@ -11,7 +11,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy.sql import text
 from werkzeug.utils import secure_filename
-from forms import LoginForm, SignupForm
+#from forms import LoginForm, SignupForm
 from models import UserProfile, Wish, users_wishes
 from bs4 import BeautifulSoup
 import requests
@@ -19,10 +19,15 @@ import urlparse
 import time
 import os
 import random
+import datetime
 
 ###
 # JWT Handlers
 ###
+app.config['JWT_EXPIRATION_DELTA'] = datetime.timedelta(seconds=86400) # token expires in timedelta(seconds=300) currently (5 mins) change to a day
+app.config['JWT_AUTH_ENDPOINT'] = 'bearer' # authorization header
+app.config['JWT_AUTH_HEADER_PREFIX'] = 'BEARER' # OAuth2 Bearer tokens
+
 def authenticate(email,password):
     """ Returns an authenticated identity """
     # Lookup user
@@ -48,10 +53,10 @@ def auth_response_handler(access_token, identity):
     msg = "Success"
     # Create data dict
     userData = {'email': identity.email, 'name': identity.name}
-    jsonData = {'user': userData, 'access_token': access_token.decode('utf-8'), 'payload': jwt.jwt_payload_callback()}
+    jsonData = {'user': userData, 'access_token': access_token.decode('utf-8'), 'payload': jwt.jwt_payload_callback(identity)}
     
     # Generate JSON object
-    return jsonify(error=err, data=jsonData, message=msg), 302 # found
+    return jsonify(error=err, data=jsonData, message=msg)
 
 ## Setup Flask-JWT
 jwt = JWT(app, authenticate, identity)
@@ -89,7 +94,7 @@ def logout():
 # # EXTRA - add profile page for users (DEFER TO FRONT-END)
 # @app.route('/api/users/<int:userid>', methods=['GET'])
 # def view_profile(userid):
-#     """ Render an individual user profile page """
+#     """ Render an individual user's profile page """
     
 #     # Search for given userid
 #     user_profile = UserProfile.query.filter_by(id=userid).first()
@@ -141,13 +146,30 @@ def get_item(itemid):
     # Generate JSON output
     return jsonify(error=err, data={'item': itemData}, message=msg)
 
-# NEEDS SOME WORK (ADMIN Test 3)
-@app.route("/api/token/<user>")
-def authorize_user(user):
-    """ Generates a token header for a user """
-    # Return Format --> Authorization: <token schema> <token>
-    auth = 'Bearer ' + encode_user(user)
-    return requests.post(url_for("login", _external=True), headers={'Authorization': auth})
+# # ADMIN Test 3 - Testing JWT features
+# @app.route("/api/token/<int:userid>", methods=['GET'])
+# def authorize_user(userid):
+#     """ Generates a token header for a user """
+#     # Return Format --> Authorization: <token schema> <token>
+#     # Get resource
+#     resource = request.json['resource']
+#     # Search for userid
+#     user = UserProfile.query.get(userid)
+#     # Check if found
+#     if user:
+#       # Create header 
+#       auth = 'Bearer ' + str(jwt.jwt_encode_callback(user))
+#       headers = 'Authorization' + auth
+      
+#       # Create json response
+#       err = None
+#       msg = "Success"
+#       tokenData = {'headers': str(jwt.jwt_headers_handler(user)), 'auth': headers, 'current_identity': str(current_identity), 'payload': jwt.jwt_payload_handler(user), 'url': headers + url_for(resource,userid=user.id,_external=True) }
+#       return jsonify(error=err, data={'token': tokenData}, message=msg)
+#       #return requests.post(url_for("login", _external=True), headers={'Authorization': auth})
+#     else:
+#         abort(404) # not found
+
 
 ###
 # Share Feature (GEORGIA)
@@ -168,6 +190,10 @@ def signup():
     if not request.json:
         abort(400)
     
+    # Check manadatory json fields
+    if 'name' not in request.json or 'email' not in request.json or 'password' not in request.json:
+        abort(400) # missing arguments
+        
     # Get JSON data values
     name = request.json['name']
     
@@ -175,17 +201,16 @@ def signup():
     email = request.json['email']
     # Check if email has been used before
     if UserProfile.query.filter_by(email = email).first() is not None:
-        return jsonify(error=True, data=None, message="Email already in use"), 400 # existing user
+        return jsonify(error=True, data={}, message="Email already in use"), 400 # existing user
     
     password = request.json['password']
     
-    # Check manadatory json fields
-    if name is None or email is None or password is None:
-        abort(400) # missing arguments
+    # Tolerate missing other fields
+    if 'age' in request.json:
+        age = request.json['age']
     
-    # Get other fields
-    age = request.json['age']
-    gender = request.json['gender']
+    if 'gender' in request.json:
+        gender = request.json['gender']
     
     ## IMAGE FIELD
     # Uploads folder
@@ -241,13 +266,13 @@ def login():
     if not auth:
         abort(400) # bad request
         
+    # Check fields
+    if 'email' not in auth or 'password' not in auth:
+        abort(400) # missing arguments
+        
     # Get data fields
     email = auth['email']
     password = auth['password']
-        
-    # Check fields
-    if email is None or password is None:
-        abort(400) # missing arguments
         
     # Check authentication
     identity = jwt.authentication_callback(email, password)
@@ -256,7 +281,7 @@ def login():
     access_token = jwt.jwt_encode_callback(identity)
             
     # Generate json response
-    return jwt.auth_response_handler(access_token, identity)
+    return auth_response_handler(access_token, identity)
         
 @app.route("/api/users/<int:userid>/wishlist", methods=["GET","POST"])
 @jwt_required()
@@ -314,15 +339,15 @@ def view_wishlist(userid):
         else:
             abort(400) # bad request
         
+        # Check fields
+        if 'title' not in jsonObj or 'description' not in jsonObj or 'url' not in jsonObj or 'thumbnail_url' not in jsonObj:
+            abort(400) # missing arguments
+       
         # Get fields
         title = jsonObj['title']
         description = jsonObj['description']
         url = jsonObj['url']
         thumbnail_url = jsonObj['thumbnail_url']
-        
-        # Check fields
-        if title is None or description is None or url is None or thumbnail_url is None:
-            abort(400) # missing arguments
         
         # Check if user was found
         if user:
@@ -336,7 +361,7 @@ def view_wishlist(userid):
             db.session.get_bind().execute(users_wishes.insert(), user_id=userid, wish_id=wish.item_id)
             # JSON
             err = None
-            itemData = {'id': wish.item_id, 'title': wish.title, 'description': wish.description, 'url': wish.url, 'thumbnail_url': wish.thumbnail, 'uri': url_for('get_item', itemid = wish.item_id, _external = True), 'current_identity': str(current_identity)}
+            itemData = {'id': wish.item_id, 'title': wish.title, 'description': wish.description, 'url': wish.url, 'thumbnail_url': wish.thumbnail, 'uri': url_for('get_item', itemid = wish.item_id, _external = True)}
             msg = "Success"
         else:
             # User not found
@@ -383,7 +408,7 @@ def get_thumbnails():
     """ Accepts a URL and returns JSON containing a list of thumbnails """
     # Check for json Object
     if not request.json or 'url' not in request.json:
-        abort(400)
+        abort(400) # bad request
     # Get URL
     url = request.json['url']
     # Get image URLs
@@ -394,7 +419,7 @@ def get_thumbnails():
         msg = "Success"
     else:
         err = True
-        msg = "URL request error"
+        msg = "Unable to extract thumbnails"
     
     return jsonify(error=err, data={'thumbnails': urls}, message=msg)
     
@@ -417,7 +442,12 @@ def flash_errors(form):
 
 def get_imageURLS(url):
     """ Returns a list of thumbnail URLS """
-    result = requests.get(url)
+    try:
+        result = requests.get(url)
+    except Exception:
+        # Error
+        abort(500)
+        
     soup = BeautifulSoup(result.text, "html.parser")
 
     # This will look for a meta tag with the og:image property
@@ -477,7 +507,7 @@ def page_not_found(error):
     if request.headers['Content-Type'] == 'application/json':
         err = True
         msg = "Not found"
-        appData = None
+        appData = {} # empty object
         return make_response(jsonify(error=err, data=appData, message=msg), 404)
     else:
         return render_template('404.html'), 404
@@ -485,16 +515,30 @@ def page_not_found(error):
 @app.errorhandler(400)
 def bad_request(error):
     err = True
-    msg = "Bad request"
-    appData = None
+    msg = "Bad request made"
+    appData = {} # empty object
     return make_response(jsonify(error=err, data=appData, message=msg), 400)
 
 @app.errorhandler(401)
 def unauthorized_access(error):
     err = True
-    msg = "Unauthorized Access"
-    appData = None
+    msg = "Unauthorized Access - Invalid credentials"
+    appData = {} # empty object
     return make_response(jsonify(error=err, data=appData, message=msg), 401)
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    err = True
+    msg = "The method is not allowed for the requested URL"
+    appData = {} # empty object
+    return make_response(jsonify(error=err, data=appData, message=msg), 405)
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    err = True
+    msg = "Connection error"
+    appData = {} # empty object
+    return make_response(jsonify(error=err, data=appData, message=msg), 500)
     
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0",port="8080")

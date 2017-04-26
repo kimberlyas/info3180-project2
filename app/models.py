@@ -47,7 +47,7 @@ class UserProfile(db.Model):
             return str(self.id)  # python 3 support
 
     def __repr__(self):
-        return '<User %r>' % (self.first_name + self.last_name)
+        return '<User %r>' % (self.name)
 
 
 # Wishlist Item

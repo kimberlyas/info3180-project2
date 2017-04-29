@@ -1,0 +1,9 @@
+<!--Main Heading-->
+<h1 class="cover-heading">WishList.</h1>
+<p class="lead">Share with your friends and family everything you're currently interested in.</p>
+<p class="lead">
+   <!--Registration Call to Action-->
+  <a ng-if="!wishlist.isAuthorized()" ng-click="wishlist.setRoute('register')" class="btn btn-lg btn-success">Sign up Today!</a>
+   <!--View Wishlist-->
+  <a ng-if="wishlist.isAuthorized()" ng-click="wishlist.setRoute('wishList');" class="btn btn-lg btn-success">View Wishlist</a>
+</p>

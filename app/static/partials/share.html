@@ -1,0 +1,49 @@
+<div class="panel panel-primary">
+  <!--Panel header-->
+  <div class="panel-heading">
+    <h3 class="panel-title">Share Wishlist</h3>
+  </div>
+  <!--Panel body-->
+  <div class="panel-body">
+    <form ng-submit="wishlist.share()">
+      <legend>Share your wishlist with up to FIVE persons at a time</legend>
+      <!--Get Email1-->
+      <div class="form-group">
+        <label for="email1">Email address 1</label>
+        <input type="email" class="form-control" id="email1" aria-describedby="emailHelp1" placeholder="test1@example.com" ng-model="wishlist.share.email1" required>
+        <small id="emailHelp1" class="form-text text-muted">Enter email of person 1 to send your wishes to.</small>
+      </div>
+      <!--Get Email2-->
+      <div class="form-group">
+        <label for="email2">Email address 2</label>
+        <input type="email" class="form-control" id="email2" aria-describedby="emailHelp2" placeholder="test2@example.com" ng-model="wishlist.share.email2">
+        <small id="emailHelp2" class="form-text text-muted">Enter email of person 2 to send your wishes to.</small>
+      </div>
+      <!--Get Email3-->
+      <div class="form-group">
+        <label for="email3">Email address 3</label>
+        <input type="email" class="form-control" id="email3" aria-describedby="emailHelp3" placeholder="test3@example.com" ng-model="wishlist.share.email3">
+        <small id="emailHelp3" class="form-text text-muted">Enter email of person 3 to send your wishes to.</small>
+      </div>
+      <!--Get Email4-->
+      <div class="form-group">
+        <label for="email4">Email address 4</label>
+        <input type="email" class="form-control" id="email4" aria-describedby="emailHelp4" placeholder="test4@example.com" ng-model="wishlist.share.email4">
+        <small id="emailHelp4" class="form-text text-muted">Enter email of person 4 to send your wishes to.</small>
+      </div>
+      <!--Get Email5-->
+      <div class="form-group">
+        <label for="email5">Email address 5</label>
+        <input type="email" class="form-control" id="email5" aria-describedby="emailHelp5" placeholder="test5@example.com" ng-model="wishlist.share.email5">
+        <small id="emailHelp5" class="form-text text-muted">Enter email of person 5 to send your wishes to.</small>
+      </div>
+       <!--Send button-->
+      <button type="submit" class="btn btn-success">Send</button>
+    </form>
+  </div>
+  <!--Panel footer-->
+  <div class="panel-footer">
+      <!--Display message  -->
+      <p ng-if="wishlist.share.message" style="color:red">{{ wishlist.share.message }}</p>
+  </div>
+</div>

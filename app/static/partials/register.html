@@ -1,0 +1,83 @@
+<div class="panel panel-primary">
+   <!--Panel header-->
+  <div class="panel-heading">
+    <h3 class="panel-title">Register</h3>
+  </div>
+  <!--Panel body-->
+  <div class="panel-body">
+    <form ng-submit="wishlist.postRegister()">
+    <!--Add Name-->
+        <div class="form-group row">
+          <label for="name" class="col-sm-2 col-form-label">Full Name</label>
+          <div class="col-sm-8">
+            <input class="form-control" type="text" id="name" placeholder="First Last" ng-model="wishlist.register.name" required>
+          </div>
+        </div>
+    <!--Add Email-->
+      <div class="form-group row">
+        <label for="email" class="col-sm-2 col-form-label">Email address</label>
+        <div class="col-sm-8">
+        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="test@example.com" ng-model="wishlist.register.email" required>
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+      </div>
+    <!--Add Password-->
+      <div class="form-group row">
+        <label for="password" class="col-sm-2 col-form-label">Password</label>
+        <div class="col-sm-8">
+        <input type="password" class="form-control" id="password" placeholder="Enter Password" aria-describedby="passwordHelpBlock" ng-model="wishlist.register.password" required>
+        <small id="passwordHelpBlock" class="form-text text-muted">
+        Your password must be 8-20 characters long, contain letters and numbers, and must not contain spaces, special characters, or emoji.
+        </small>
+        </div>
+      </div>
+    <!--Add Age-->
+      <div class="form-group row">
+        <label for="age" class="col-sm-2 col-form-label">Age</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="number" id="age" ng-model="wishlist.register.age">
+        </div>
+      </div>
+    <!--Choose Gender-->
+      <fieldset class="form-group row">
+        <label for="gender" class="col-sm-2 col-form-label">Gender</label>
+        <div class="col-sm-8">
+        <div class="form-check form-check-inline">
+          <label class="col-sm-2 col-form-check-label">
+            <input type="radio" ng-model="wishlist.register.gender" class="form-check-input" name="gender" id="gender1" value="F">
+            Female
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="col-sm-2 col-form-check-label">
+            <input type="radio" ng-model="wishlist.register.gender" class="form-check-input" name="gender" id="gender2" value="M">
+            Male
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <label class="col-sm-2 col-form-check-label">
+            <input type="radio" ng-model="wishlist.register.gender" class="form-check-input" name="gender" id="gender3" value="O">
+            Other
+          </label>
+        </div>
+        </div>
+      </fieldset>
+    <!--Upload display pic-->
+      <div class="form-group row">
+        <legend class="col-sm-2 col-form-legend">Upload image</legend>
+        <div class="col-sm-8">
+        <!--<input type="file" ng-model="wishlist.register.image" class="form-control-file form-control" id="image" aria-describedby="fileHelp">-->
+        <input type="file" file-model="wishlist.register.image" class="form-control-file form-control" id="image" aria-describedby="fileHelp">
+        <small id="fileHelp" class="form-text text-muted">This image will serve as your display picture &mdash; this field is optional.</small>
+      </div>
+      </div>
+  <!--Register user button-->
+      <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+  </div>
+  <!--Panel footer-->
+  <div class="panel-footer">
+      <!--Display message  -->
+      <p ng-if="wishlist.register.message" style="color:red">{{ wishlist.register.message }}</p>
+  </div>
+</div>

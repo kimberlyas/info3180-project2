@@ -24,6 +24,11 @@ email: test4@example.com
 password: password123
 access_token: 
 
+// Test User 5
+userid: 620079767
+email: test5@example.com
+password: password123
+
 // Authorization Header
 Format --> Authorization: <token schema> <token>
 using JWT so --> Authorization: Bearer <token>
@@ -33,9 +38,10 @@ using JWT so --> Authorization: Bearer <token>
 
 1. Thumbnail Endpoint
 -- Amazon.com (IP-based CAPTCHA preventing scraping)
- curl -i -H "Content-Type: application/json" -X GET -d '{"url":"https://www.amazon.com/dp/B01LTHXAO0"}' http://0.0.0.0:8080/api/thumbnails
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMyODAyMTQsIm5iZiI6MTQ5MzI4MDIxNCwiZXhwIjoxNDkzMzY2NjE0fQ.7MLO5UPHsroX9vP-ipMh8LQZglr-RbR3-xvYhlE-XxM" -H "Content-Type: application/json" -X GET -d '{"url":"https://www.amazon.com/dp/B01LTHXAO0"}' http://0.0.0.0:8080/api/thumbnails
 -- Walmart.com 
- curl -i -H "Content-Type: application/json" -X GET -d '{"url":"https://www.walmart.com/ip/54742302"}' http://0.0.0.0:8080/api/thumbnails
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMzNDU4MDcsIm5iZiI6MTQ5MzM0NTgwNywiZXhwIjoxNDkzNDMyMjA3fQ.wk-e8DtmXPijuvMApfNUq8LJpPcF3_I4VDgdyKb44hs" -H "Content-Type: application/json" -X GET -d '{"url":"https://www.walmart.com/ip/54742302"}' http://0.0.0.0:8080/api/thumbnails
+
 2. User Registration Endpoint (WORKED; TEST DATA STORED IN DB ^_^)
  curl -i -H "Content-Type: application/json" -X POST -d '{"email":"test@example.com", "name":"Test User", "password":"password123","age":26, "gender":"F"}' http://0.0.0.0:8080/api/users/register
 
@@ -45,7 +51,7 @@ using JWT so --> Authorization: Bearer <token>
 4. Add item to Wishlist Endpoint
 
 -- Test with auth header
- curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMxNTg3MzMsIm5iZiI6MTQ5MzE1ODczMywiZXhwIjoxNDkzMjQ1MTMzfQ.K8FWCwN3CU1F8q-aUMDdsTV62oTlogIDqXoxOnl90Xs" -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/620089869/wishlist
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0MjkzNzMsIm5iZiI6MTQ5MzQyOTM3MywiZXhwIjoxNDkzNTE1NzczfQ.O_VSpLCKLRi5YWQB3xv8K0CLkLJan7ArclUYAZu_ruU" -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/620089869/wishlist
 
 -- Test without auth header (Should produce an error) 
  curl -i -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/620089869/wishlist
@@ -53,7 +59,7 @@ using JWT so --> Authorization: Bearer <token>
 5. View Wishlist Endpoint
 
 -- Test with auth header
- curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDUwMTA4LCJpYXQiOjE0OTMxNzQ1MjIsIm5iZiI6MTQ5MzE3NDUyMiwiZXhwIjoxNDkzMjYwOTIyfQ.KEO3fa-TAZfY_BFxYVmRaYFPdO5LllUxmmDKtnIg5MA" -H "Content-Type: application/json" http://0.0.0.0:8080/api/users/620050108/wishlist
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0MTkwMDIsIm5iZiI6MTQ5MzQxOTAwMiwiZXhwIjoxNDkzNTA1NDAyfQ.PbaEQMafXHy83kBwAjTVEgT-pSqalOjaCutjO0LOE3Q" -H "Content-Type: application/json" http://0.0.0.0:8080/api/users/620089869/wishlist
 
 -- Test without auth header (Should produce an error)
  curl -i http://0.0.0.0:8080/api/users/620089869/wishlist
@@ -61,10 +67,14 @@ using JWT so --> Authorization: Bearer <token>
 6. Remove Wishlist Item Endpoint
 
 -- Test with auth header
- curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMxNTg3MzMsIm5iZiI6MTQ5MzE1ODczMywiZXhwIjoxNDkzMjQ1MTMzfQ.K8FWCwN3CU1F8q-aUMDdsTV62oTlogIDqXoxOnl90Xs" -H "Content-Type: application/json" -X DELETE http://0.0.0.0:8080/api/users/620089869/wishlist/5
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0MTkwMDIsIm5iZiI6MTQ5MzQxOTAwMiwiZXhwIjoxNDkzNTA1NDAyfQ.PbaEQMafXHy83kBwAjTVEgT-pSqalOjaCutjO0LOE3Q" -H "Content-Type: application/json" -X DELETE http://0.0.0.0:8080/api/users/620089869/wishlist/13
 
 -- Test without auth header (Should produce an error)
  curl -i -H "Content-Type: application/json" -X DELETE http://0.0.0.0:8080/api/users/620089869/wishlist/5
+
+10. Share feature
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0MTkwMDIsIm5iZiI6MTQ5MzQxOTAwMiwiZXhwIjoxNDkzNTA1NDAyfQ.PbaEQMafXHy83kBwAjTVEgT-pSqalOjaCutjO0LOE3Q" -H "Content-Type: application/json" -d '{"email1":"kimberly.50ar35@gmail.com","email2":"g.j.pickersgill@gmail.com","email3":"indi.shanbry@gmail.com"}' -X POST http://0.0.0.0:8080/api/users/620089869/shareWishlist
+ curl -i -H "Content-Type: application/json" -d '{"email1":"kimberly.50ar35@gmail.com"}' -X GET http://0.0.0.0:8080/api/users/620089869/shareWishlist
 
 -- # EXTRA ENDPOINTS for Testing Purposes
 7. Get user info

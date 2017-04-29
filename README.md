@@ -1,8 +1,8 @@
 # A Wishlist Web Application
 Project members : 
-@Shanice Bryan (https://github.com/0shanAbry1)
-@Georgia Pickersgill (https://github.com/GeorgiaPickersgill)
-@Kimberly Soares (https://github.com/kimberlyas)
+* @Shanice Bryan (https://github.com/0shanAbry1)
+* @Georgia Pickersgill (https://github.com/GeorgiaPickersgill)
+* @Kimberly Soares (https://github.com/kimberlyas)
 
 ## Background
 While it is possible to create a wish list on Amazon, or similar sites there are
@@ -21,3 +21,5 @@ wishlist based on a website URL. Each wishlist item, should have a title,
 description, website address and a thumbnail image. Thumbnail images are
 obtained by scrapping the link to the website for all images and allowing the user
 to select one before they save the item to their wishlist.
+
+Details about the API can be found at: http://docs.wishlist14.apiary.io/ .

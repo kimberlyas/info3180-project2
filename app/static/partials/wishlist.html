@@ -1,0 +1,34 @@
+<!--Wishlist Header-->
+<div class="jumbotron">
+  <h1>Your Wishlist</h1>
+  <p>All your heart's desires.</p>
+  <!--Add item--><!--Share wishlist-->
+  <p><a ng-click="wishlist.setRoute('add')" class="btn btn-success btn-lg" role="button">Make a wish</a>
+  &emsp;
+  <a ng-click="wishlist.setRoute('share')" class="btn btn-primary btn-lg" role="button">Share Wishlist</a></p>
+</div>
+<div data-ng-init="wishlist.getWishList();">
+<!--Wishlist Message-->
+<div ng-if="wishlist.wishes.message" class="alert alert-info" role="alert">{{ wishlist.wishes.message }}</div>
+<!--Wishlist Items-->
+<div class="row">
+  <div class="col-sm-6 col-md-4" ng-repeat="wish in wishlist.wishes.items">
+    <div class="thumbnail">
+      <!--Thumbnail-->
+      <img ng-src="{{ wish.thumbnail_url }}" alt="{{ wish.title }}">
+      <div class="caption">
+        <!--Title-->
+        <h3>{{ wish.title }}</h3>
+        <!--Description-->
+        <p>{{ wish.description }}</p>
+        <!--Item ID (hidden)-->
+        <p class="ng-hide" ng-init="wishlist.delwish.itemid=wish.id">{{ wish.id }}</p>
+        <!--Delete item-->
+        <p><a ng-click="wishlist.deleteItem();" class="btn btn-danger" role="button">Delete</a></p>
+       
+      </div>
+    </div>
+  </div>
+</div>
+<!--WishList Footer-->
+</div>

@@ -1,0 +1,34 @@
+<h1 class="page-header">User Profile</h1>
+
+<div class="main-container" data-ng-init="wishlist.getProfile();">
+    
+    <div class="profile-picture">
+      
+        <img id="pic" src="static/uploads/{{ wishlist.profile.user.image }}" alt="Picture of User">
+       
+    </div>
+
+    <div class="info-container">
+        <div id="name-header" class="separator">
+             <h3> {{ wishlist.profile.user.name }}</h3>
+        </div>
+        
+        <div id="date" class="separator">
+            <p><b>Profile Created On:</b>{{ wishlist.profile.user.created_on }}</p>
+        </div>
+        
+        <div id="info-list" class="separator">
+            <dl><dt>Email: </dt><dd> {{ wishlist.profile.user.email }}</dd>
+                <dt>User ID: </dt><dd> {{ wishlist.profile.user.id }}</dd>
+                <dt>Age: </dt><dd> {{ wishlist.profile.user.age }}</dd>
+                <dt>Gender: </dt><dd>{{ wishlist.profile.user.gender }}</dd>
+            </dl>
+        </div>
+        
+        <div id="about" class="separator">
+            <p> I love making wishes on <a ng-click="wishlist.setRoute('home')">WishList.</a><!/p>
+        </div>
+    </div>
+    
+</div>
+

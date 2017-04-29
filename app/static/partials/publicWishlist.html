@@ -1,0 +1,30 @@
+<!--Wishlist Header-->
+<div class="jumbotron">
+  <h1>{{ wishlist.wishes.user }}'s Wishlist</h1>
+  <p>Fulfill all their heart's desires today!</p>
+ </div>
+<div data-ng-init="wishlist.getPublicWishList();">
+<!--Wishlist Message-->
+<div ng-if="wishlist.wishes.message" class="alert alert-info" role="alert">{{ wishlist.wishes.message }}</div>
+<!--Wishlist Items-->
+<div class="row">
+  <div class="col-sm-6 col-md-4" ng-repeat="wish in wishlist.wishes.items">
+    <div class="thumbnail">
+      <!--Thumbnail-->
+      <img ng-src="{{ wish.thumbnail_url }}" alt="{{ wish.title }}">
+      <div class="caption">
+        <!--Title-->
+        <h3>{{ wish.title }}</h3>
+        <!--Description-->
+        <p>{{ wish.description }}</p>
+        <!--Item ID (hidden)-->
+        <p class="ng-hide">{{ wish.id }}</p>
+        <!--Get item-->
+        <p><a href="{{ wish.url }}" class="btn btn-success" role="button">Fulfill</a></p>
+       
+      </div>
+    </div>
+  </div>
+</div>
+<!--WishList Footer-->
+</div>

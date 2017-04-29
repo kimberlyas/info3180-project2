@@ -15,6 +15,9 @@
         wishlist.login = {}; //Login
         wishlist.wishes = {}; //Wish List (Home)
         wishlist.delwish = {}; //Remove Wish
+        wishlist.profile = {}; //Profile
+        wishlist.share = {}; //Share
+        
         
         // Local Storage stuffs
         // if ($window.localStorage.access_token && $window.localStorage.token_exp 
@@ -163,52 +166,46 @@
             );
         }; //Thumbnail Processing >> Accepts the website url to scrap images from
         
-        // wishlist.postRegister = function(){
-        //     var headerObj = {
-        //         'Content-Type': undefined,
-        //     };
+        wishlist.postRegister = function(){
+            //ng-model >> Register Form
+            var bodyObj = {
+                email: wishlist.register.email,
+                name: wishlist.register.name,
+                password: wishlist.register.password,
+                age: wishlist.register.age,
+                gender: wishlist.register.gender,
+                image: wishlist.register.image
+            };
             
-        //     //ng-model >> Register Form
-        //     var bodyObj = {
-        //         email: wishlist.register.email,
-        //         name: wishlist.register.name,
-        //         password: wishlist.register.password,
-        //         age: wishlist.register.age,
-        //         gender: wishlist.register.gender,
-        //         image: wishlist.register.image
-        //     };
+            // bodyObj = JSON.stringify(bodyObj);
             
-        //     // headerObj = JSON.stringify(headerObj);
-        //     // bodyObj = JSON.stringify(bodyObj);
+            console.log("Request (Body) >> Object:- "); console.log(bodyObj);
             
-        //     console.log("Request (Header) >> Object:- "); console.log(headerObj);
-        //     console.log("Request (Body) >> Object:- "); console.log(bodyObj);
-            
-        //     wishListData.requestData('POST', 'api/users/register', headerObj, bodyObj)
-        //     .then(
-        //         function(data){
-        //             if(data.user){
-        //                 wishlist.register.user = data["user"]; //Object
-        //                 wishlist.register.message = "You have been successfully registered!"; //Message >> Success
+            fileFormData.requestData('api/users/register', bodyObj)
+            .then(
+                function(data){
+                    if(data.user){
+                        wishlist.register.user = data["user"]; //Object
+                        wishlist.register.message = "You have been successfully registered!"; //Message >> Success
                         
-        //                 console.log("Response >> Object:- "); console.log(wishlist.register.user);
-        //                 console.log("Response >> Message (Success):- "); console.log(wishlist.register.message);
+                        console.log("Response >> Object:- "); console.log(wishlist.register.user);
+                        console.log("Response >> Message (Success):- "); console.log(wishlist.register.message);
                     
-        //                 // Alert user
-        //                 $window.alert(wishlist.register.message);
-        //                 // Redirect to home
-        //                 wishlist.setRoute('home');
-        //             }
-        //             else{
-        //                 wishlist.register.message = "An error has occured while registering you!"; //Message >> Error
-        //                 // Alert user
-        //                 $window.alert(wishlist.register.message);
-        //                 // Debug
-        //                 console.log("Response >> Message (Error):- "); console.log(wishlist.register.message);
-        //             }
-        //         }
-        //     );
-        // }; //User Registration >> Accepts new user information and saves it
+                        // Alert user
+                        $window.alert(wishlist.register.message);
+                        // Redirect to home
+                        wishlist.setRoute('home');
+                    }
+                    else{
+                        wishlist.register.message = "An error has occured while registering you!"; //Message >> Error
+                        // Alert user
+                        //$window.alert(wishlist.register.message);
+                        // Debug
+                        console.log("Response >> Message (Error):- "); console.log(wishlist.register.message);
+                    }
+                }
+            );
+        }; //User Registration >> Accepts new user information and saves it
         
         wishlist.postLogin = function(){
             var headerObj = {
@@ -298,7 +295,6 @@
         };
         
         wishlist.getWishList = function(){
-            
             // Check for local storage stuff
             var userid = wishlist.token_identity;
            
@@ -373,6 +369,8 @@
                 function(data){
                     if(data.items){
                         wishlist.wishes.items = data["items"]; //List
+                        // Get user's name
+                        wishlist.wishes.user = data["user"];
                         
                         if(wishlist.wishes.items.length == 0){
                             wishlist.wishes.message = "Oops! This wish list is empty!";
@@ -393,6 +391,10 @@
             );
         };
         
+        wishlist.selectThumbnail = function(thumbnail){
+            wishlist.addwish.thumbnail_url = thumbnail;
+        };
+        
         wishlist.postItem = function(){
             var userid = wishlist.token_identity;
             
@@ -408,12 +410,13 @@
                 title: wishlist.addwish.title,
                 description: wishlist.addwish.description_,
                 url: wishlist.addwish.url,
-                // thumbnail_url: wishlist.addwish.thumbnail_url
-                thumbnail_url: wishlist.selectThumbnail = function(thumbnail){
-                    wishlist.addwish.thumbnail_url = thumbnail;
-                    return wishlist.addwish.thumbnail_url;
-                }
+                thumbnail_url: wishlist.addwish.thumbnail_url
             };
+            
+                // thumbnail_url: wishlist.selectThumbnail = function(thumbnail){
+                //     wishlist.addwish.thumbnail_url = thumbnail;
+                //     //return wishlist.addwish.thumbnail_url;
+                // }
             
             // headerObj = JSON.stringify(headerObj);
             // bodyObj = JSON.stringify(bodyObj);

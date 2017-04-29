@@ -6,7 +6,7 @@
             .directive('fileModel', fileModel); //Directive for wishListApp created
         
     //fileModel.$inject = ['parse','WishListController']; //Should I have even injected the controller?!
-    fileModel.$inject = ['parse']; //Let's try without it first
+    fileModel.$inject = ['$parse']; //Let's try without it first
    
     //function fileModel($parse, WishListController){ //-_- 
     function fileModel($parse){

@@ -9,6 +9,7 @@ from app import app, db
 from flask import render_template, request, redirect, url_for, flash, jsonify, json, send_from_directory, make_response, abort
 from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy.sql import text
+from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.utils import secure_filename
 from models import UserProfile, Wish, users_wishes
 from bs4 import BeautifulSoup
@@ -172,12 +173,12 @@ def share_wishlist(userid):
                 # JSON
                 err = None
                 msg = "Success"
-                userData = {"items": wishList}
+                userData = {"items": wishList, "user": user.name}
             else: # No wishes found
                 # Error?
                 err = True
                 msg = "No wishes found"
-                userData = {"items": wishList}
+                userData = {"items": wishList, "user": user.name}
             
             # Generate JSON object
             return jsonify(error=err, data=userData, message=msg)
@@ -191,33 +192,48 @@ def share_wishlist(userid):
 @app.route("/api/users/register", methods=["POST"])
 def signup():
     """ Accepts user information and saves it to the database """
+    
+    data = None;
+    
+    if request.form:
+        data = request.form
+    elif request.json:
+        data = request.json
+    
+    # if request.headers['Content-Type'] == 'multipart/form-data' or request.headers['Content-Type'] == 'undefined':
+    #     data = dict(request.form)
+    # elif request.json:
+    #     data = request.json
+    
+    # data = request.json
+        
     # Check for JSON object
-    if not request.json:
+    if not data:
         abort(400)
     
     # Check manadatory json fields
-    if 'name' not in request.json or 'email' not in request.json or 'password' not in request.json:
+    if 'name' not in data or 'email' not in data or 'password' not in data:
         abort(400) # missing arguments
         
     # Get JSON data values
-    name = request.json['name']
+    name = data['name']
     
     ## EMAIL FIELD
-    email = request.json['email']
+    email = data['email']
     # Check if email has been used before
     if UserProfile.query.filter_by(email = email).first() is not None:
         return jsonify(error=True, data={}, message="Email already in use"), 400 # existing user
     
-    password = request.json['password']
+    password = data['password']
     
     # Tolerate missing other fields
-    if 'age' in request.json:
-        age = request.json['age']
+    if 'age' in data:
+        age = data['age']
     else:
         age = None
     
-    if 'gender' in request.json:
-        gender = request.json['gender']
+    if 'gender' in data:
+        gender = data['gender']
     else:
         gender = None
     
@@ -446,7 +462,7 @@ def get_user(userid):
     # Return user info as JSON output
     err = None
     msg = "Success"
-    userData = {'id':user.id, 'email': user.email,'name': user.name, 'password': user.password, 'age': user.age, 'gender': user.gender, 'image': user.image}
+    userData = {'id':user.id, 'email': user.email,'name': user.name, 'password': user.password, 'age': user.age, 'gender': user.gender, 'image': user.image, 'created_on': user.created_on}
     # Generate JSON output
     return jsonify(error=err, data={'user': userData}, message=msg)
 
@@ -570,6 +586,8 @@ def page_not_found(error):
         return make_response(jsonify(error=err, data=appData, message=msg), 404)
     else:
          return render_template('404.html'), 404
+#     if os.environ.haskey("SOME_HEADER"):
+#   # do something with the header, i.e. os.environ["SOME_HEADER"]
 
 @app.errorhandler(400)
 def bad_request(error):

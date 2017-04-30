@@ -1,9 +1,12 @@
 -- API TEST DATA
 
 // Test User 1
-userid: 620006571
+userid: 620017820
 email: test1@example.com
 password: password123
+
+// Test User 2
+
 
 // Authorization Header
 Format --> Authorization: <token schema> <token>

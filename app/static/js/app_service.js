@@ -21,7 +21,8 @@
         function requestData(reqMethod, reqUrl, reqHeaders, reqData){
             var requestDataObj = {
                 method: reqMethod,
-                url: 'https://info3180-project2-kimberlyas.c9users.io/' + reqUrl,
+                //url: 'https://info3180-project2-kimberlyas.c9users.io/' + reqUrl,
+                url: 'https://wishlist-app-2017.herokuapp.com/' + reqUrl,
                 headers: reqHeaders,
                 data: reqData
             };

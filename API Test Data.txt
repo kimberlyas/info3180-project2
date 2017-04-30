@@ -5,9 +5,6 @@ userid: 620073042
 email: test1@example.com
 password: password123
 
-// Test User 2
-
-
 // Authorization Header
 Format --> Authorization: <token schema> <token>
 using JWT so --> Authorization: Bearer <token>

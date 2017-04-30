@@ -19,16 +19,7 @@
         wishlist.profile = {}; //Profile
         wishlist.share = {}; //Share
         
-        //console.log($scope.LoginForm.$pristine);
-        // Local Storage stuffs
-        // if ($window.localStorage.access_token && $window.localStorage.token_exp 
-        //     && $window.localStorage.identity && $window.localStorage.user_name)
-        // {  
-        //     wishlist.token_name = $window.localStorage.user_name; // token holder's name
-        //     wishlist.token_exp = $window.localStorage.token_exp; // token expiration
-        //     wishlist.token_identity = $window.localStorage.identity; // token holder's id
-        //     wishlist.token = $window.localStorage.access_token; // leh token
-        // }
+        // Local Storage Stuffs
         wishlist.token_name = ""; // token holder's name
         wishlist.token_exp = ""; // token expiration
         wishlist.token_identity = ""; // token holder's id
@@ -46,8 +37,8 @@
         //     // Clear the model
         //     formModel = {}; // empty
         //     // Reset form
-        //     // formName.$setPristine();
-        //     // formName.$setUntouched();
+        //     formName.$setPristine();
+        //     formName.$setUntouched();
         // };
         
         // Logout function
@@ -234,10 +225,7 @@
                         // Alert user
                         $window.alert(wishlist.register.message);
                         
-                        //console.log($scope.RegisterForm);
-                        //$scope.RegisterForm.$setPristine();
-                        //$scope.RegisterForm.$setUntouched();
-                        
+                       
                         // Redirect to home
                         wishlist.setRoute('home');
                         
@@ -283,9 +271,6 @@
                         
                         // Display to user
                         $window.alert(wishlist.login.message);
-                        
-                        // $scope.LoginForm.$setPristine();
-                        // $scope.LoginForm.$setUntouched();
                         
                         // We store this token in localStorage so that subsequent API requests
                         // can use the token until it expires or is deleted.
@@ -480,10 +465,6 @@
                 thumbnail_url: wishlist.addwish.thumbnail_url
             };
             
-                // thumbnail_url: wishlist.selectThumbnail = function(thumbnail){
-                //     wishlist.addwish.thumbnail_url = thumbnail;
-                //     //return wishlist.addwish.thumbnail_url;
-                // }
             
             // headerObj = JSON.stringify(headerObj);
             // bodyObj = JSON.stringify(bodyObj);
@@ -505,8 +486,6 @@
                         // Alert user
                         $window.alert(wishlist.addwish.message);
                         
-                        // $scope.AddWishForm.$setPristine();
-                        // $scope.AddWishForm.$setUntouched();
                         
                         // Redirect to wishlist
                         wishlist.setRoute('wishList');

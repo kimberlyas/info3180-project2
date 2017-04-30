@@ -65,22 +65,22 @@ jwt = JWT(app, authenticate, identity)
 # Routing for your application.
 ###
 
-@app.route('/app')
+@app.route('/')
 def wishListApp():
     """ Load website's main page."""
     # This loads a static HTML file where we then hand over the interaction
     # to AngularJS
     return app.send_static_file('index.html')
 
-@app.route('/')
-def home():
-    """Render website's home page."""
-    return render_template('home.html')
+# @app.route('/')
+# def home():
+#     """Render website's home page."""
+#     return render_template('home.html')
 
-@app.route('/about/')
-def about():
-    """Render the website's about page."""
-    return render_template('about.html')
+# @app.route('/about/')
+# def about():
+#     """Render the website's about page."""
+#     return render_template('about.html')
     
 ###
 # Share Feature (GEORGIA)
@@ -147,7 +147,8 @@ def share_wishlist(userid):
             from_addr = user.email
             subject = "My Favourite Things"
             # This link may change (heroku)
-            link = "\n\nhttps://info3180-project2-kimberlyas.c9users.io/app#/wishList/" + str(user.id)
+            #link = "\n\nhttps://info3180-project2-kimberlyas.c9users.io/app#/wishList/" + str(user.id)
+            link = "\n\nhttps://wishlist-app-2017.herokuapp.com/#/wishList/" + str(user.id)
             msg = "Good Day Family and Friends! \n\nI would love to get these items! Any item you can purchase will be greatly appreciated :) " + "" + link
         
             # Iterate through mailing list

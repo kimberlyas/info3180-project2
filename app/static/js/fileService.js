@@ -17,7 +17,8 @@
         return fileFormData; 
         
         function requestData(reqUrl, reqData){
-            reqUrl = 'https://info3180-project2-kimberlyas.c9users.io/'+reqUrl;
+            //reqUrl = 'https://info3180-project2-kimberlyas.c9users.io/'+reqUrl;
+             reqUrl = 'https://wishlist-app-2017.herokuapp.com/' + reqUrl;
             
             var fd = new FormData();
             for(var key in reqData){

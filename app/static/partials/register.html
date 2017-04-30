@@ -1,10 +1,10 @@
 <div class="panel panel-primary">
    <!--Panel header-->
-  <div class="panel-heading">
+  <div class="panel-heading" style="background-color:#932a93">
     <h3 class="panel-title">Register</h3>
   </div>
   <!--Panel body-->
-  <div class="panel-body">
+  <div class="panel-body" style="color:#932a93">
     <form ng-submit="wishlist.postRegister()">
     <!--Add Name-->
         <div class="form-group row">
@@ -64,10 +64,11 @@
       </fieldset>
     <!--Upload display pic-->
       <div class="form-group row">
-        <legend class="col-sm-2 col-form-legend">Upload image</legend>
+        <!--<legend class="col-sm-2 col-form-legend">Upload image</legend>-->
+        <label for="image" class="col-sm-2 col-form-label">Upload</label>
         <div class="col-sm-8">
         <!--<input type="file" ng-model="wishlist.register.image" class="form-control-file form-control" id="image" aria-describedby="fileHelp">-->
-        <input type="file" file-model="wishlist.register.image" class="form-control-file form-control" id="image" aria-describedby="fileHelp">
+        <input type="file" accept="image/*" file-model="wishlist.register.image" class="form-control-file form-control" name="image" id="image" aria-describedby="fileHelp">
         <small id="fileHelp" class="form-text text-muted">This image will serve as your display picture &mdash; this field is optional.</small>
       </div>
       </div>
@@ -78,6 +79,6 @@
   <!--Panel footer-->
   <div class="panel-footer">
       <!--Display message  -->
-      <p ng-if="wishlist.register.message" style="color:red">{{ wishlist.register.message }}</p>
+      <!--<p ng-if="wishlist.register.message" style="color:red">{{ wishlist.register.message }}</p>-->
   </div>
 </div>

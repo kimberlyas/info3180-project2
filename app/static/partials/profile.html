@@ -14,14 +14,16 @@
         </div>
         
         <div id="date" class="separator">
-            <p><b>Profile Created On:</b>{{ wishlist.profile.user.created_on }}</p>
+            <p><b>Profile Created On: </b>{{ wishlist.profile.user.created_on }}</p>
         </div>
         
         <div id="info-list" class="separator">
-            <dl><dt>Email: </dt><dd> {{ wishlist.profile.user.email }}</dd>
-                <dt>User ID: </dt><dd> {{ wishlist.profile.user.id }}</dd>
-                <dt>Age: </dt><dd> {{ wishlist.profile.user.age }}</dd>
-                <dt>Gender: </dt><dd>{{ wishlist.profile.user.gender }}</dd>
+            <dl><dt>Email: </dt><dd style="text-align:left"> &nbsp&nbsp&nbsp&nbsp {{ wishlist.profile.user.email }}</dd>
+                <dt>User ID: </dt><dd style="text-align:left"> &nbsp {{ wishlist.profile.user.id }}</dd>
+                <dt ng-if="wishlist.profile.user.age != 0">Age: </dt><dd ng-if="wishlist.profile.user.age != 0" style="text-align:left"> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp {{ wishlist.profile.user.age }}</dd>
+                <dt ng-if="wishlist.profile.user.age == 0">Age: </dt><dd ng-if="wishlist.profile.user.age == 0" style="text-align:left"> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp &#x221e;</dd>
+                <dt ng-if="wishlist.profile.user.gender != 'U'">Gender: </dt><dd ng-if="wishlist.profile.user.gender != 'U'" style="text-align:left"> &nbsp {{ wishlist.profile.user.gender }}</dd>
+                <dt ng-if="wishlist.profile.user.gender == 'U'">Gender: </dt><dd ng-if="wishlist.profile.user.gender == 'U'" style="text-align:left"> &nbsp Unknown</dd>
             </dl>
         </div>
         

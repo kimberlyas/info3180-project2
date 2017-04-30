@@ -10,6 +10,7 @@
     function WishListController(wishListData, fileFormData, $location, $window, $routeParams, $route){
         var wishlist = this; //Renames the object's self-reference this
         
+        // Form Models
         wishlist.addwish = {}; //New Wish
         wishlist.register = {}; //Register
         wishlist.login = {}; //Login
@@ -18,7 +19,7 @@
         wishlist.profile = {}; //Profile
         wishlist.share = {}; //Share
         
-        
+        //console.log($scope.LoginForm.$pristine);
         // Local Storage stuffs
         // if ($window.localStorage.access_token && $window.localStorage.token_exp 
         //     && $window.localStorage.identity && $window.localStorage.user_name)
@@ -40,6 +41,15 @@
 	        $location.path(route);
         };
         
+        // // Function to clear form data
+        // wishlist.resetForm = function(formName, formModel){
+        //     // Clear the model
+        //     formModel = {}; // empty
+        //     // Reset form
+        //     // formName.$setPristine();
+        //     // formName.$setUntouched();
+        // };
+        
         // Logout function
         wishlist.logout = function(){
            
@@ -56,13 +66,8 @@
                 // Alert user
                 $window.alert("You've been logged out.");
                 
-                // redirect user to home
-                wishlist.setRoute('home');
-            }
-            else
-            {
-                // Alert user
-                $window.alert("You're not logged in.");
+                // Reload current page
+                $route.reload();
             }
             
         };
@@ -100,17 +105,24 @@
                         wishlist.share.message = "Wishlist successfully sent!"; //Message >> Success
                         
                         // Alert user
-                        //$window.alert(wishlist.share.message);
+                        $window.alert(wishlist.share.message);
+                        
+                        
+                        // Redirect to wishlist
+                        wishlist.setRoute('wishList');
                         
                         // Debug
                         console.log("Response >> List:- "); console.log(wishlist.share.emails);
                         console.log("Response >> Message (Success):- "); console.log(wishlist.share.message);
+                        
+                        // Clear form
+                        wishlist.share = {};
                     }
                     else{
                         wishlist.share.message = "An error has occured while sending your wishlist!"; //Message >> Error
                         
                         // Alert user
-                        //$window.alert(wishlist.share.message);
+                        $window.alert(wishlist.share.message);
                         
                         // Debug
                         console.log("Response >> Message (Error):- "); console.log(wishlist.share.message);
@@ -123,7 +135,7 @@
         //ng-click >> Search button
         wishlist.getThumbnails = function(){
             var headerObj = {
-                'Content-Type': 'application/json', 
+                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + wishlist.token
             };
             
@@ -139,15 +151,22 @@
             console.log("Request (Header) >> Object:- "); console.log(headerObj);
             console.log("Request (Body) >> Object:- "); console.log(bodyObj);
             
-            wishListData.requestData('GET', 'api/thumbnails', headerObj, bodyObj)
+            wishListData.requestData('POST', 'api/thumbnails', headerObj, bodyObj)
             .then(
                 function(data){
                     if(data.thumbnails){
                         wishlist.addwish.thumbnails = data["thumbnails"]; //List
-                        wishlist.addwish.message = "Thumbnails successfully retrieved from URL!"; //Message >> Success
+                        
+                        // Check if any were actually retrieved
+                        if(wishlist.addwish.thumbnails.length == 0){
+                            wishlist.addwish.message = "Oops! Unable to extract any thumbnails from the given URL.";
+                        }
+                        else{
+                            wishlist.addwish.message = "Thumbnails successfully retrieved from URL!"; 
+                        } //Message >> Success
                         
                         // Alert user
-                        //$window.alert(wishlist.addwish.message);
+                        $window.alert(wishlist.addwish.message);
                         
                         // Debug
                         console.log("Response >> List:- "); console.log(wishlist.addwish.thumbnails);
@@ -157,7 +176,7 @@
                         wishlist.addwish.message = "An error has occured while retrieving thumbnails from URL!"; //Message >> Error
                         
                         // Alert user
-                        //$window.alert(wishlist.addwish.message);
+                        $window.alert(wishlist.addwish.message);
                         
                         // Debug
                         console.log("Response >> Message (Error):- "); console.log(wishlist.addwish.message);
@@ -168,6 +187,26 @@
         
         wishlist.postRegister = function(){
             //ng-model >> Register Form
+            
+            // Check for empty fields
+            if (!wishlist.register.age)
+            {
+                // Age
+                wishlist.register.age = 0;
+            }
+            // Check for empty fields
+            if (!wishlist.register.gender)
+            {
+                // Gender
+                wishlist.register.gender = 'U';
+            }
+            // Check for empty fields
+            if (!wishlist.register.image)
+            {
+                // Image
+                wishlist.register.image = '';
+            }
+            
             var bodyObj = {
                 email: wishlist.register.email,
                 name: wishlist.register.name,
@@ -180,6 +219,7 @@
             // bodyObj = JSON.stringify(bodyObj);
             
             console.log("Request (Body) >> Object:- "); console.log(bodyObj);
+            //var reqMethod = 'POST';
             
             fileFormData.requestData('api/users/register', bodyObj)
             .then(
@@ -193,13 +233,21 @@
                     
                         // Alert user
                         $window.alert(wishlist.register.message);
+                        
+                        //console.log($scope.RegisterForm);
+                        //$scope.RegisterForm.$setPristine();
+                        //$scope.RegisterForm.$setUntouched();
+                        
                         // Redirect to home
                         wishlist.setRoute('home');
+                        
+                        // Clear form
+                        wishlist.register = {};
                     }
                     else{
-                        wishlist.register.message = "An error has occured while registering you!"; //Message >> Error
+                        wishlist.register.message = "An error has occured while registering you! This email address is already being used."; //Message >> Error
                         // Alert user
-                        //$window.alert(wishlist.register.message);
+                        $window.alert(wishlist.register.message);
                         // Debug
                         console.log("Response >> Message (Error):- "); console.log(wishlist.register.message);
                     }
@@ -235,6 +283,10 @@
                         
                         // Display to user
                         $window.alert(wishlist.login.message);
+                        
+                        // $scope.LoginForm.$setPristine();
+                        // $scope.LoginForm.$setUntouched();
+                        
                         // We store this token in localStorage so that subsequent API requests
                         // can use the token until it expires or is deleted.
                         $window.localStorage.setItem('access_token', wishlist.login.access_token);
@@ -247,6 +299,8 @@
                         console.log("Response >> Object:- "); console.log(wishlist.login.user);
                         console.log("Response >> Message (Success):- "); console.log(wishlist.login.message);
                         
+                        // Clear form
+                        wishlist.login = {};
                         // Redirect to wishlist
                         wishlist.setRoute('wishList');
                     }
@@ -269,14 +323,26 @@
                 && $window.localStorage.identity && $window.localStorage.user_name)
             {
                 
-                // Check if expired
-                if ($window.localStorage.token_exp < Date.now() / 1000)
+                // Get expiration time of token
+			    var token_exp = new Date($window.localStorage.getItem('token_exp')).getTime();
+			
+			    // Check if token has expired
+                if (Date.now() > token_exp)
                 {
+                    
+                    console.log('token expired');
+                    
                     // Remove token stored in localStorage.
-                    wishlist.logout();
+                    $window.localStorage.removeItem('access_token');
+                    $window.localStorage.removeItem('token_exp');
+                    $window.localStorage.removeItem('identity');
+                    $window.localStorage.removeItem('user_name');
                     
                     // Alert user to login again
                     $window.alert("Your token has expired. Please login again.");
+                    
+                    // Redirect to home page
+				    $location.path('/home');
                     
                     // Expired Token
                     return false;
@@ -376,7 +442,7 @@
                             wishlist.wishes.message = "Oops! This wish list is empty!";
                         }
                         else{
-                            wishlist.wishes.message = "This wish list has been successfully retrieved!"; 
+                            wishlist.wishes.message = "This user's wish list has been successfully retrieved!"; 
                         } //Message >> Success
                         
                         console.log("Response >> List:- "); console.log(wishlist.wishes.items);
@@ -391,6 +457,7 @@
             );
         };
         
+        // Allows users to choose a thumbnail
         wishlist.selectThumbnail = function(thumbnail){
             wishlist.addwish.thumbnail_url = thumbnail;
         };
@@ -437,13 +504,20 @@
                         
                         // Alert user
                         $window.alert(wishlist.addwish.message);
+                        
+                        // $scope.AddWishForm.$setPristine();
+                        // $scope.AddWishForm.$setUntouched();
+                        
                         // Redirect to wishlist
                         wishlist.setRoute('wishList');
+                        
+                        // Clear form
+                        wishlist.addwish = {};
                     }
                     else{
                         wishlist.addwish.message = "An error has occured while adding your new wish!"; //Message >> Error
                         // Alert user
-                        //$window.alert(wishlist.addwish.message);
+                        $window.alert(wishlist.addwish.message);
                         // Debug
                         console.log("Response >> Message (Error):- "); console.log(wishlist.addwish.message);
                     }
@@ -520,7 +594,7 @@
                         
                         wishlist.profile.message = "Your profile has been successfully retrieved!"; 
                        //Message >> Success
-                        $window.alert(wishlist.profile.message);
+                        //$window.alert(wishlist.profile.message);
                         console.log("Response >> User:- "); console.log(wishlist.profile.user);
                         console.log("Response >> Message (Success):- "); console.log(wishlist.profile.message);
                     }

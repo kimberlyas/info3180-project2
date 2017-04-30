@@ -1,11 +1,11 @@
-<div class="panel panel-primary">
+<div class="panel panel-primary" >
    <!--Panel header-->
-  <div class="panel-heading">
+  <div class="panel-heading" style="background-color:#932a93">
     <h3 class="panel-title">Add Wish</h3>
   </div>
   <!--Panel body-->
-  <div class="panel-body">
-    <form ng-submit="wishlist.postItem()">
+  <div class="panel-body" style="color:#932a93">
+    <form name="AddWishForm" ng-submit="wishlist.postItem()">
     <!--Add Title-->
         <div class="form-group row">
           <label for="title" class="col-sm-2 col-form-label">Title</label>
@@ -42,8 +42,8 @@
             <!--Thumbnails view-->
             <div class="row">
               <div class="col-xs-6 col-md-3" ng-repeat="thumbnail in wishlist.addwish.thumbnails track by $index">
-                <a ng-click="wishlist.selectThumbnail(thumbnail)" class="thumbnail">
-                  <img ng-src="{{ thumbnail }}">
+                <a ng-click="wishlist.selectThumbnail(thumbnail);highlight='thumbnail active'" ng-class="highlight" class="thumbnail">
+                  <img ng-src="{{ thumbnail }}" class="img-thumbnail" height="300" width="150">
                 </a>
               </div>
             </div>
@@ -56,7 +56,7 @@
   <!--Panel footer-->
   <div class="panel-footer">
       <!--Display message  -->
-      <p ng-if="wishlist.addwish.message" style="color:red">{{ wishlist.addwish.message }}</p>
+      <!--<p ng-if="wishlist.addwish.message" style="color:red">{{ wishlist.addwish.message }}</p>-->
   </div>
 </div>
 

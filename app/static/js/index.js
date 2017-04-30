@@ -68,10 +68,39 @@
 		// Check if token is saved
 		if ($window.localStorage.getItem('access_token'))
 		{
+			// Get expiration time of token
+			var token_exp = new Date($window.localStorage.getItem('token_exp')).getTime();
+			
+			// Check if token has expired
+            if (Date.now() > token_exp)
+            {
+                // Debug    
+                console.log('token expired');
+                    
+                // Remove token stored in localStorage.
+                $window.localStorage.removeItem('access_token');
+                $window.localStorage.removeItem('token_exp');
+                $window.localStorage.removeItem('identity');
+                $window.localStorage.removeItem('user_name');
+                    
+                // Alert user to login again
+                $window.alert("Your token has expired. Please login again.");
+                
+                // Redirect to home page
+				$location.path('/home');
+                    
+                // Expired Token
+                return false;
+            }
+            
+            // Valid token
 			return true;
 		}
 		else
 		{
+			// Debug
+			console.log('Unauthorized access >> re-routing');
+			// Redirect to home page
 			$location.path('/home');
 		}
 	} // User must be authorized to view this page

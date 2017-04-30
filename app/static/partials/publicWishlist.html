@@ -1,7 +1,7 @@
 <!--Wishlist Header-->
 <div class="jumbotron">
-  <h1>{{ wishlist.wishes.user }}'s Wishlist</h1>
-  <p>Fulfill all their heart's desires today!</p>
+  <h1 style="color:#932a93">{{ wishlist.wishes.user }}'s Wishlist</h1>
+  <p style="color:#932a93">Fulfill all their heart's desires today!</p>
  </div>
 <div data-ng-init="wishlist.getPublicWishList();">
 <!--Wishlist Message-->
@@ -20,7 +20,7 @@
         <!--Item ID (hidden)-->
         <p class="ng-hide">{{ wish.id }}</p>
         <!--Get item-->
-        <p><a href="{{ wish.url }}" class="btn btn-success" role="button">Fulfill</a></p>
+        <p><a href="{{ wish.url }}" class="btn btn-success" role="button">GET</a></p>
        
       </div>
     </div>

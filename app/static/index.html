@@ -27,87 +27,90 @@
   
   <!-- Define Angular app and controller -->
   <body ng-app="wishListApp" ng-controller="WishListController as wishlist">
-
     <div class="site-wrapper">
-
       <div class="site-wrapper-inner">
-
         <div class="cover-container">
+          
           <!--Navbar-->
-          <div class="masthead clearfix">
-            <div class="inner">
-                <!--Brand-->
-              <h3 class="masthead-brand"><a ng-click="wishlist.setRoute('home')">WishList</a></h3>
-              <nav>
-                <ul class="nav masthead-nav">
-                   <div id="navbar" class="navbar-collapse collapse">
-                          <!--If authenticated-->
-                          <p class="navbar-text navbar-right" ng-if="wishlist.isAuthorized();">Signed in as <a ng-click="wishlist.setRoute('profile')" class="navbar-link">{{ wishlist.token_name }}</a></p>
-                       
-                          <!--Login Functionality-->
-                          <form ng-if="!wishlist.isAuthorized()" ng-submit="wishlist.postLogin()" class="navbar-form navbar-right">
-                            <div class="form-group">
-                                <!--Get Email-->
-                              <input type="email" placeholder="Email" class="form-control" ng-model="wishlist.login.email" required>
-                            </div>
-                            <div class="form-group">
-                                <!--Get Password-->
-                              <input type="password" placeholder="Password" class="form-control" ng-model="wishlist.login.password" required>
-                            </div>
-                            <!--Login button-->
-                            <button type="submit" class="btn btn-success">Sign in</button>
-                          </form>
+          <!--<div class="masthead clearfix">-->
+          <!--  <div class="inner">-->
+              <!--Brand-->
+              <nav class="navbar navbar-default navbar-fixed-top">
+                <div class="container-fluid">
+                  <!--<ul class="nav masthead-nav">-->
+                    <div id="navbar" class="navbar-collapse collapse">
+                      <h3 class="navbar-text navbar-left"><a ng-click="wishlist.setRoute('home')">WishList</a></h3>
+                      
+                      <!--If authenticated-->
+                      <h4 class="navbar-text navbar-right" ng-if="wishlist.isAuthorized();" style="color:#61b735">Signed in as <a ng-click="wishlist.setRoute('profile')" class="navbar-link">{{ wishlist.token_name }}</a></h4>
+                   
+                      <!--Login Functionality-->
+                      <form name="LoginForm" ng-if="!wishlist.isAuthorized()" ng-submit="wishlist.postLogin()" class="navbar-form navbar-right">
+                        <div class="form-group">
+                            <!--Get Email-->
+                          <input type="email" placeholder="Email" class="form-control" ng-model="wishlist.login.email" required>
+                        </div>
+                        <div class="form-group">
+                            <!--Get Password-->
+                          <input type="password" placeholder="Password" class="form-control" ng-model="wishlist.login.password" required>
+                        </div>
+                        <!--Login button-->
+                        <button type="submit" class="btn btn-success">Sign in</button>
+                      </form>
                     </div><!--/.navbar-collapse -->
-                </ul>
+                  <!--</ul>-->
+                </div>
               </nav>
-             </div>
-          </div>
+          <!--  </div>-->
+          <!--</div>-->
           
           <!--Main Application-->
           <div class="inner cover">
-            
-                <!-- Content is injected here -->
-                <div ng-view></div>
-     
+            <!-- Content is injected here -->
+            <div ng-view></div>
           </div>
           
           <!--Footer-->
-          <div class="mastfoot">
+          <!--<div class="mastfoot">-->
                
             <div class="inner">
               <!--Navigation tabs-->
-          <ul class="nav nav-tabs justify-content-center">
-            <li class="nav-item">
-              <a class="nav-link" ng-click="wishlist.setRoute('home')">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" ng-click="wishlist.setRoute('register')">Sign up</a>
-            </li>
-            <li class="nav-item" ng-if="wishlist.isAuthorized()">
-              <a class="nav-link" ng-click="wishlist.setRoute('wishList')">My Wishlist</a>
-            </li>
-            <li class="nav-item" ng-if="wishlist.isAuthorized()">
-              <a class="nav-link" ng-click="wishlist.setRoute('add')">Add Wish</a>
-            </li>
-             <li class="nav-item" ng-if="wishlist.isAuthorized()">
-              <a class="nav-link" ng-click="wishlist.setRoute('share')">Share Wishlist</a>
-            </li>
-            <li class="nav-item" ng-if="wishlist.isAuthorized()">
-              <a class="nav-link" ng-click="wishlist.setRoute('profile')">My Profile</a>
-            </li>
-            <li class="nav-item" ng-if="wishlist.isAuthorized()">
-              <a class="nav-link" ng-click="wishlist.logout()">Logout</a>
-            </li>
-          </ul>
-            <!--Copyright-->
-              <p>&copy; 2017 WishList Inc.</p>
+              <div class="navbar navbar-default navbar-fixed-bottom">
+                <div class="container-fluid">
+                  <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                      <a class="nav-link" ng-click="wishlist.setRoute('home')">Home</a>
+                    </li>
+                    <li class="nav-item" ng-if="!wishlist.isAuthorized()">
+                      <a class="nav-link" ng-click="wishlist.setRoute('register')">Sign up</a>
+                    </li>
+                    <li class="nav-item" ng-if="wishlist.isAuthorized()">
+                      <a class="nav-link" ng-click="wishlist.setRoute('wishList')">My Wishlist</a>
+                    </li>
+                    <li class="nav-item" ng-if="wishlist.isAuthorized()">
+                      <a class="nav-link" ng-click="wishlist.setRoute('add')">Add Wish</a>
+                    </li>
+                     <li class="nav-item" ng-if="wishlist.isAuthorized()">
+                      <a class="nav-link" ng-click="wishlist.setRoute('share')">Share Wishlist</a>
+                    </li>
+                    
+                    <li class="nav-item navbar-nav navbar-right navbar-text" style="color:#61b735">
+                      <p>&copy; 2017 WishList Inc.</p><!--Copyright-->
+                    </li>
+                    <li class="nav-item navbar-nav navbar-right" ng-if="wishlist.isAuthorized()">
+                      <a class="nav-link" ng-click="wishlist.logout()">Logout</a>
+                    </li>
+                    <li class="nav-item navbar-nav navbar-right" ng-if="wishlist.isAuthorized()">
+                      <a class="nav-link" ng-click="wishlist.setRoute('profile')">My Profile</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
-          </div>
+          <!--</div>-->
 
         </div>
-
       </div>
-
     </div>
 
     <!-- Bootstrap core JavaScript

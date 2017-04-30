@@ -55,7 +55,7 @@ class Wish(db.Model):
     item_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     description = db.Column(db.Text)
-    url = db.Column(db.String(255))
+    url = db.Column(db.Text)
     thumbnail = db.Column(db.String(255))
 
     def __init__(self, title, description, address, imageUrl):

@@ -30,7 +30,18 @@
     border-radius: 5px;
 }
 
-#name-header { background-color: #f5f5f5; }
+#name-header, #about { 
+    background-color: #f5f5f5; 
+    color: #61b735;
+}
+
+#date, dt {
+    color: #932a93;
+}
+
+a {
+    color: #61b735;
+}
 
 h4 {
     margin-top: 0px;

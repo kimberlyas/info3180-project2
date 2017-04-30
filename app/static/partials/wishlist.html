@@ -1,7 +1,7 @@
 <!--Wishlist Header-->
 <div class="jumbotron">
-  <h1>Your Wishlist</h1>
-  <p>All your heart's desires.</p>
+  <h1 style="color:#932a93">Your Wishlist</h1>
+  <p style="color:#932a93">All your heart's desires.</p>
   <!--Add item--><!--Share wishlist-->
   <p><a ng-click="wishlist.setRoute('add')" class="btn btn-success btn-lg" role="button">Make a wish</a>
   &emsp;
@@ -15,16 +15,18 @@
   <div class="col-sm-6 col-md-4" ng-repeat="wish in wishlist.wishes.items">
     <div class="thumbnail">
       <!--Thumbnail-->
-      <img ng-src="{{ wish.thumbnail_url }}" alt="{{ wish.title }}">
+      <img ng-src="{{ wish.thumbnail_url }}" alt="{{ wish.title }}" class="img-thumbnail" height="300" width="150">
       <div class="caption">
         <!--Title-->
-        <h3>{{ wish.title }}</h3>
+        <a href="{{ wish.url }}"><h3>{{ wish.title }}</h3></a>
         <!--Description-->
         <p>{{ wish.description }}</p>
         <!--Item ID (hidden)-->
         <p class="ng-hide" ng-init="wishlist.delwish.itemid=wish.id">{{ wish.id }}</p>
         <!--Delete item-->
         <p><a ng-click="wishlist.deleteItem();" class="btn btn-danger" role="button">Delete</a></p>
+        <!--Get item-->
+        <!--<p><a href="{{ wish.url }}" class="btn btn-success" role="button">GET</a></p>-->
        
       </div>
     </div>

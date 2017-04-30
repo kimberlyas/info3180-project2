@@ -1,12 +1,12 @@
 <div class="panel panel-primary">
   <!--Panel header-->
-  <div class="panel-heading">
+  <div class="panel-heading" style="background-color:#932a93">
     <h3 class="panel-title">Share Wishlist</h3>
   </div>
   <!--Panel body-->
-  <div class="panel-body">
-    <form ng-submit="wishlist.share()">
-      <legend>Share your wishlist with up to FIVE persons at a time</legend>
+  <div class="panel-body" style="color:#932a93">
+    <form name="ShareForm" ng-submit="wishlist.share()">
+      <legend>Share your wishlist with up to five (5) persons!</legend>
       <!--Get Email1-->
       <div class="form-group">
         <label for="email1">Email address 1</label>
@@ -44,6 +44,6 @@
   <!--Panel footer-->
   <div class="panel-footer">
       <!--Display message  -->
-      <p ng-if="wishlist.share.message" style="color:red">{{ wishlist.share.message }}</p>
+      <!--<p ng-if="wishlist.share.message" style="color:red">{{ wishlist.share.message }}</p>-->
   </div>
 </div>

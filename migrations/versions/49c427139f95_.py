@@ -22,7 +22,7 @@ def upgrade():
     sa.Column('item_id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('url', sa.String(length=255), nullable=True),
+    sa.Column('url', sa.Text(), nullable=True),
     sa.Column('thumbnail', sa.String(length=255), nullable=True),
     sa.PrimaryKeyConstraint('item_id')
     )

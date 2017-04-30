@@ -1,33 +1,12 @@
 -- API TEST DATA
 
 // Test User 1
-userid: 620089869
+userid: 620073042
 email: test1@example.com
 password: password123
-access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMxNTg3MzMsIm5iZiI6MTQ5MzE1ODczMywiZXhwIjoxNDkzMjQ1MTMzfQ.K8FWCwN3CU1F8q-aUMDdsTV62oTlogIDqXoxOnl90Xs
-^^ expires Wed, 26 Apr 2017 22:18:53
 
 // Test User 2
-userid: 620099713
-email: test2@example.com
-password: password123
 
-// Test User 3
-userid: 620009324
-email: test3@example.com
-password: password123
-access_token:
-
-// Test User 4
-userid: 620050108
-email: test4@example.com
-password: password123
-access_token: 
-
-// Test User 5
-userid: 620079767
-email: test5@example.com
-password: password123
 
 // Authorization Header
 Format --> Authorization: <token schema> <token>
@@ -40,7 +19,7 @@ using JWT so --> Authorization: Bearer <token>
 -- Amazon.com (IP-based CAPTCHA preventing scraping)
  curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMyODAyMTQsIm5iZiI6MTQ5MzI4MDIxNCwiZXhwIjoxNDkzMzY2NjE0fQ.7MLO5UPHsroX9vP-ipMh8LQZglr-RbR3-xvYhlE-XxM" -H "Content-Type: application/json" -X GET -d '{"url":"https://www.amazon.com/dp/B01LTHXAO0"}' http://0.0.0.0:8080/api/thumbnails
 -- Walmart.com 
- curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTMzNDU4MDcsIm5iZiI6MTQ5MzM0NTgwNywiZXhwIjoxNDkzNDMyMjA3fQ.wk-e8DtmXPijuvMApfNUq8LJpPcF3_I4VDgdyKb44hs" -H "Content-Type: application/json" -X GET -d '{"url":"https://www.walmart.com/ip/54742302"}' http://0.0.0.0:8080/api/thumbnails
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0ODM0NTYsIm5iZiI6MTQ5MzQ4MzQ1NiwiZXhwIjoxNDkzNTY5ODU2fQ.Jnj7TsdNOFGOodANCCuoRBokYXeNko2Q4N65cFcvGI4" -H "Content-Type: application/json" -X GET -d '{"url":"https://www.walmart.com/ip/54742302"}' http://0.0.0.0:8080/api/thumbnails
 
 2. User Registration Endpoint (WORKED; TEST DATA STORED IN DB ^_^)
  curl -i -H "Content-Type: application/json" -X POST -d '{"email":"test@example.com", "name":"Test User", "password":"password123","age":26, "gender":"F"}' http://0.0.0.0:8080/api/users/register
@@ -51,7 +30,7 @@ using JWT so --> Authorization: Bearer <token>
 4. Add item to Wishlist Endpoint
 
 -- Test with auth header
- curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0MjkzNzMsIm5iZiI6MTQ5MzQyOTM3MywiZXhwIjoxNDkzNTE1NzczfQ.O_VSpLCKLRi5YWQB3xv8K0CLkLJan7ArclUYAZu_ruU" -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/620089869/wishlist
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDczMDQyLCJpYXQiOjE0OTM1MDE4MzksIm5iZiI6MTQ5MzUwMTgzOSwiZXhwIjoxNDkzNTg4MjM5fQ.ASYrI8W9abzeRKn28pneNpRnWVzqdlYfUtb3wBG1dl8" -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/620073042/wishlist
 
 -- Test without auth header (Should produce an error) 
  curl -i -H "Content-Type: application/json" -X POST -d '{"title":"Macbook Pro","description":"The new Macbook Pro comes with a Touchbar", "url":"https://www.amazon.com/dp/B01LTHXAO0", "thumbnail_url":"https://images-na.ssl-images-amazon.com/images/I/41uYSa%2BL%2BNL._SX300_.jpg"}' http://0.0.0.0:8080/api/users/620089869/wishlist
@@ -73,7 +52,7 @@ using JWT so --> Authorization: Bearer <token>
  curl -i -H "Content-Type: application/json" -X DELETE http://0.0.0.0:8080/api/users/620089869/wishlist/5
 
 10. Share feature
- curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0MTkwMDIsIm5iZiI6MTQ5MzQxOTAwMiwiZXhwIjoxNDkzNTA1NDAyfQ.PbaEQMafXHy83kBwAjTVEgT-pSqalOjaCutjO0LOE3Q" -H "Content-Type: application/json" -d '{"email1":"kimberly.50ar35@gmail.com","email2":"g.j.pickersgill@gmail.com","email3":"indi.shanbry@gmail.com"}' -X POST http://0.0.0.0:8080/api/users/620089869/shareWishlist
+ curl -i -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZGVudGl0eSI6NjIwMDg5ODY5LCJpYXQiOjE0OTM0ODM1NjMsIm5iZiI6MTQ5MzQ4MzU2MywiZXhwIjoxNDkzNTY5OTYzfQ.fRu54drSu8vXfwMMJ7OjKNCx5muNeQsglnjNCX9F1nM" -H "Content-Type: application/json" -d '{"email1":"kimberly.50ar35@gmail.com","email2":"g.j.pickersgill@gmail.com","email3":"indi.shanbry@gmail.com"}' -X POST http://0.0.0.0:8080/api/users/620089869/shareWishlist
  curl -i -H "Content-Type: application/json" -d '{"email1":"kimberly.50ar35@gmail.com"}' -X GET http://0.0.0.0:8080/api/users/620089869/shareWishlist
 
 -- # EXTRA ENDPOINTS for Testing Purposes
@@ -184,18 +163,19 @@ Foreign-key constraints:
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Table "wish"
-
    Column    |          Type          |                       Modifiers                        
 -------------+------------------------+--------------------------------------------------------
  item_id     | integer                | not null default nextval('wish_item_id_seq'::regclass)
  title       | character varying(255) | 
- description | text                   | 
- url         | character varying(255) | 
  thumbnail   | character varying(255) | 
+ description | text                   | 
+ url         | text                   | 
 Indexes:
     "wish_pkey" PRIMARY KEY, btree (item_id)
 Referenced by:
     TABLE "users_wishes" CONSTRAINT "users_wishes_wish_id_fkey" FOREIGN KEY (wish_id) REFERENCES wish(item_id)
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 -- Queries
 

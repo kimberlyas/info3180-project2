@@ -108,34 +108,20 @@ def share_wishlist(userid):
         if user:
             # Check for emails
             if 'email1' in json_data:
-                # Check if not empty
-                if json_data['email1']:
-                    # Append to mailing list
-                    emails.append(json_data['email1'])
+                # Append to mailing list
+                emails.append(json_data['email1'])
             
             if 'email2' in json_data:
-                # Check if not empty
-                if json_data['email2']:
-                    # Append to mailing list
-                    emails.append(json_data['email2'])
+                emails.append(json_data['email2'])
                 
             if 'email3' in json_data:
-                # Check if not empty
-                if json_data['email3']:
-                    # Append to mailing list
-                    emails.append(json_data['email3'])
+                emails.append(json_data['email3'])
             
             if 'email4' in json_data:
-                # Check if not empty
-                if json_data['email4']:
-                    # Append to mailing list
-                    emails.append(json_data['email4'])
+                emails.append(json_data['email4'])
             
             if 'email5' in json_data:
-                # Check if not empty
-                if json_data['email5']:
-                    # Append to mailing list
-                    emails.append(json_data['email5'])
+                emails.append(json_data['email5'])
                 
             # Check that at least one email was received
             if not emails:
@@ -207,13 +193,20 @@ def share_wishlist(userid):
 def signup():
     """ Accepts user information and saves it to the database """
     
-    data = {}
+    data = None;
     
     if request.form:
         data = request.form
     elif request.json:
         data = request.json
     
+    # if request.headers['Content-Type'] == 'multipart/form-data' or request.headers['Content-Type'] == 'undefined':
+    #     data = dict(request.form)
+    # elif request.json:
+    #     data = request.json
+    
+    # data = request.json
+        
     # Check for JSON object
     if not data:
         abort(400)
@@ -435,21 +428,19 @@ def delete_item(userid, itemid):
     return jsonify(error=err, data={'item': itemData}, message=msg)    
             
 
-@app.route('/api/thumbnails', methods=['GET','POST'])
-@jwt_required()
+@app.route('/api/thumbnails', methods=['GET'])
 def get_thumbnails():
     """ Accepts a URL and returns JSON containing a list of thumbnails """
-     
-    data = {}
     
-    if request.form:
-        data = request.form
-    elif request.json:
-        data = request.json
+    print request.json()
+
+    # Check for json Object
+    if not request.json:
+        abort(400) # bad request
     
     # Get URL
-    if 'url' in data:
-        url = data['url']
+    if 'url' in request.json:
+        url = request.json['url']
     else:
         abort(400) # bad request
         
